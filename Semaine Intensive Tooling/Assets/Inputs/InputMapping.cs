@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Inputs/CustomBindings.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Inputs/InputMapping.inputactions'
 
 using System;
 using System.Collections;
@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public class @CustomBindings : IInputActionCollection, IDisposable
+public class @InputMapping : IInputActionCollection, IDisposable
 {
     public InputActionAsset asset { get; }
-    public @CustomBindings()
+    public @InputMapping()
     {
         asset = InputActionAsset.FromJson(@"{
-    ""name"": ""CustomBindings"",
+    ""name"": ""InputMapping"",
     ""maps"": [
         {
             ""name"": ""Player"",
@@ -907,8 +907,8 @@ public class @CustomBindings : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Fire;
     public struct PlayerActions
     {
-        private @CustomBindings m_Wrapper;
-        public PlayerActions(@CustomBindings wrapper) { m_Wrapper = wrapper; }
+        private @InputMapping m_Wrapper;
+        public PlayerActions(@InputMapping wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
@@ -963,8 +963,8 @@ public class @CustomBindings : IInputActionCollection, IDisposable
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     public struct UIActions
     {
-        private @CustomBindings m_Wrapper;
-        public UIActions(@CustomBindings wrapper) { m_Wrapper = wrapper; }
+        private @InputMapping m_Wrapper;
+        public UIActions(@InputMapping wrapper) { m_Wrapper = wrapper; }
         public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
         public InputAction @Submit => m_Wrapper.m_UI_Submit;
         public InputAction @Cancel => m_Wrapper.m_UI_Cancel;

@@ -9,13 +9,13 @@ namespace Gameplay.Player
     public class MovementBehavior : MonoBehaviour
     {
         private InputAction movement;
-        public CustomBindings customBindings;
+        public InputMapping customBindings;
         public float speed;
         Vector3 direction;
 
         private void Awake()
         {
-            customBindings = new CustomBindings();
+            customBindings = new InputMapping();
 
             movement = customBindings.Player.Move;
             movement.performed += ctx => Move(ctx);
