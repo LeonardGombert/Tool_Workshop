@@ -21,6 +21,8 @@ public class MovementBehaviorEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
+
         serializedObject.Update();
         EditorGUILayout.BeginVertical();
 
@@ -32,16 +34,16 @@ public class MovementBehaviorEditor : Editor
         if(foldoutState)
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Vector4 Bounds");
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("botLeft"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("topLeft"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("botRight"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("topRight"), GUIContent.none);
+            //GUILayout.Label("Vector4 Bounds");
+            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("rightX"), GUIContent.none);
+            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("rightY"), GUIContent.none);
+            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("leftX"), GUIContent.none);
+            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("leftY"), GUIContent.none);
             EditorGUILayout.EndHorizontal();
         }
 
         EditorGUILayout.EndVertical();
         serializedObject.ApplyModifiedProperties();
-        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
+        
     }
 }

@@ -21,10 +21,10 @@ namespace Gameplay.Player
             camera = Camera.main; // get reference with editor
 
             // draw these in editor with Handles
-            playSpace.botLeft = 100;
-            playSpace.topLeft = 100;
-            /*playSpace.botRight = camera.pixelWidth - 100;
-            playSpace.topRight = camera.pixelHeight - 100;*/
+            playSpace.leftX = 100;
+            playSpace.leftY = 100;
+            playSpace.rightX = camera.pixelWidth - 100;
+            playSpace.rightY = camera.pixelHeight - 100;
         }
 
         void Start()
@@ -40,8 +40,8 @@ namespace Gameplay.Player
 
                 Vector3 targetPos = camera.WorldToScreenPoint(transform.position + movement);
 
-                if (targetPos.x > playSpace.botLeft && targetPos.y > playSpace.topLeft &&
-                    targetPos.x < playSpace.botRight && targetPos.y < playSpace.topRight)
+                if (targetPos.x > playSpace.leftX && targetPos.y > playSpace.leftY &&
+                    targetPos.x < playSpace.rightX && targetPos.y < playSpace.rightY)
                     transform.position += movement;
 
                 yield return null;

@@ -20,10 +20,10 @@ public class CustomPlaySpaceDrawer : PropertyDrawer
         contentPosition.width *= 0.75f;
         EditorGUI.indentLevel = 0;
 
-        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("botLeft"), GUIContent.none);
-        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("topLeft"), GUIContent.none);
-        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("botRight"), GUIContent.none);
-        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("topRight"), GUIContent.none);
+        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("rightX"), GUIContent.none);
+        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("rightY"), GUIContent.none);
+        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("leftX"), GUIContent.none);
+        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("leftY"), GUIContent.none);
 
         contentPosition.x += contentPosition.width;
         contentPosition.width /= 3f;

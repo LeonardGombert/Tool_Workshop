@@ -15,5 +15,5 @@ namespace Gameplay.Player
 [System.Serializable]
 public struct Vector4Bounds
 {
-    public float botLeft, topLeft, botRight, topRight;
+    public float leftX, leftY, rightX, rightY;
 }

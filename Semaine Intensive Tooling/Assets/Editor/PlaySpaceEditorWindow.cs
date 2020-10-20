@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlaySpaceEditorWindow : EditorWindow
 {
     MovementBehavior movementBehavior;
+    Vector4Bounds windowSize;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -21,31 +22,33 @@ public class PlaySpaceEditorWindow : EditorWindow
         window.Show();
     }
 
+    private void OnEnable()
+    {
+    }
+
     private void OnGUI()
     {
-        DrawGrid();
-        /*EditorGUI.DrawRect(new Rect(50, 50, Screen.width*0.5f, Screen.width * 0.5f), Color.green);
-        Rect closeButtonRect = new Rect(30, 200, 60, 20);
-        if (GUI.Button(closeButtonRect, "Close")) Close();*/
-    }
+        Rect myRect = new Rect(0, 0, Screen.width / 2, Screen.height/ 2);
+        myRect.center = new Vector2(position.width / 2, position.height / 2);
+        EditorGUI.DrawRect(myRect, Color.black);
 
-    private void DrawGrid()
-    {
-        int gridX = 200, gridY = 200;
-        float offset = 15f;
 
-        for (int i = 0, x = 0; x < gridX; x++)
-        {
-            for (int y = 0; y < gridY; y++, i++)
-            {
-                Rect myRect = new Rect(50+x * offset, 50+y * offset, 10, 10);
-                if (GUI.Button(myRect, "")) ChangeColor(myRect);
-            }
-        }
-    }
+        windowSize.leftX = myRect.center.x - Screen.width/ 4;
+        windowSize.leftY = myRect.center.y;
+        windowSize.rightX = myRect.center.x + Screen.width / 4;
+        windowSize.rightY = myRect.center.y;
+        EditorGUI.DrawRect(new Rect(windowSize.leftX, windowSize.leftY, 5, 5), Color.white);
 
-    private void ChangeColor(Rect targetRect)
-    {
-        EditorGUI.DrawRect(targetRect, Color.red);
+        double xPos = (int)CustomScaler.Scale(movementBehavior.transform.position.x, 100,
+            Camera.main.pixelWidth - 100, windowSize.leftX, windowSize.rightX);
+        double yPos = (int)CustomScaler.Scale(movementBehavior.transform.position.y, 100,
+            Camera.main.pixelHeight - 100, windowSize.leftY, windowSize.rightY);
+
+        EditorGUI.DrawRect(new Rect((float)xPos, (float)yPos, 10, 10), Color.green);
+
+        Debug.Log("Scaled to window x is : " + xPos);
+        Debug.Log("Scaled to window y is : " + yPos);
+
+        Repaint();
     }
 }
