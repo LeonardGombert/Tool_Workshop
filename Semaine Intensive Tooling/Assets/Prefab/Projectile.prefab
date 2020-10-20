@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5301001178249893074}
   - component: {fileID: -937563187164604938}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +90,7 @@ SphereCollider:
   m_GameObject: {fileID: 5301001178249893075}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

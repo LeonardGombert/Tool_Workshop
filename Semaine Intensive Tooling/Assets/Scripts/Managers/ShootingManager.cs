@@ -6,13 +6,13 @@ namespace Gameplay.Player
     public class ShootingManager : MonoBehaviour
     {
         ProjectilePool projectilePool = null;
-        public GameObject projectilePrefab;
-        public int projectilePoolSize;
+        [SerializeField] GameObject projectilePrefab;
+        [SerializeField] int projectilePoolSize;
         private int fireCount;
 
-        public Transform playerTransform;
-        public Transform projectileContainer;
-        public RectTransform playerReticule;
+        [SerializeField] Transform playerTransform;
+        [SerializeField] Transform projectileContainer;
+        [SerializeField] RectTransform playerReticule;
 
         private void Awake()
         {
