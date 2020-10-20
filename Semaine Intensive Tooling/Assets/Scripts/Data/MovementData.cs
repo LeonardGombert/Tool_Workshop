@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 
-public class MovementData : MonoBehaviour
+namespace Gameplay.Player
 {
-    public Vector3 direction;
-    protected float movementSpeed = 22f;
+    public class MovementData : MonoBehaviour
+    {
+        public Vector3 moveDirection;
+        protected float movementSpeed = 22f;
 
-    protected Camera camera;
-    protected Vector3 constraints1;
-    protected Vector3 constraints2;
+        protected Camera camera;
+        protected Vector3 constraints1;
+        protected Vector3 constraints2;
+    }
 }

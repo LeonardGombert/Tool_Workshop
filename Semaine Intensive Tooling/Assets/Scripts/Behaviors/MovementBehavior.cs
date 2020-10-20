@@ -1,38 +1,41 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.WSA.Input;
 
 namespace Gameplay.Player
 {
     public class MovementBehavior : MovementData
     {
-        private void Awake()
+        private InputMapping inputMapping;
+        private InputAction movementAcion;
+
+        // Start is called before the first frame update
+        void Awake()
         {
-            camera = Camera.main;
+            inputMapping = new InputMapping();
+
+            movementAcion = inputMapping.Player.Move;
+            movementAcion.performed += ctx => moveDirection = ctx.ReadValue<Vector2>();
+            movementAcion.canceled += ctx => moveDirection = Vector3.zero;
+
+            camera = Camera.main; // get reference with editor
+
+            // draw these in editor with Handles
             constraints1 = new Vector3(0 + 100, 0 + 100);
             constraints2 = new Vector3(camera.pixelWidth - 100, camera.pixelHeight - 100);
+        }
+
+        void Start()
+        {
             StartCoroutine(MoveShip());
         }
 
-
-       /* private void FixedUpdate()
-        {
-            var movement = direction * movementSpeed * Time.deltaTime;
-
-            Vector3 targetPos = camera.WorldToScreenPoint(transform.position + movement);
-
-            if (targetPos.x > constraints1.x && targetPos.y > constraints1.y &&
-                targetPos.x < constraints2.x && targetPos.y < constraints2.y)
-                transform.position += movement;
-            
-            else return;
-        }*/
-
         IEnumerator MoveShip()
         {
-            while(true)
+            while (true)
             {
-                var movement = direction * movementSpeed * Time.deltaTime;
+                var movement = moveDirection * movementSpeed * Time.deltaTime;
 
                 Vector3 targetPos = camera.WorldToScreenPoint(transform.position + movement);
 
@@ -43,5 +46,17 @@ namespace Gameplay.Player
                 yield return null;
             }
         }
+
+        #region Input System
+        private void OnEnable()
+        {
+            inputMapping.Enable();
+        }
+
+        private void OnDisable()
+        {
+            inputMapping.Disable();
+        }
+        #endregion
     }
 }

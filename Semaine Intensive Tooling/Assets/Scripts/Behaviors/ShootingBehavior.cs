@@ -1,18 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class ShootingBehavior : MonoBehaviour
+namespace Gameplay.Player
 {
-    // Start is called before the first frame update
-    void Start()
+    public class ShootingBehavior : MonoBehaviour
     {
-        
-    }
+        // on input, call the Fire() method from a projectile in the pool
+        private InputMapping inputMapping;
+        private InputAction shootAction;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public GameEvent shootingEvent;
+
+        private void Awake()
+        {
+            inputMapping = new InputMapping();
+
+            shootAction = inputMapping.Player.Fire;
+            shootAction.performed += _ => shootingEvent.Raise();
+        }
+
+        #region Input System
+        private void OnEnable()
+        {
+            inputMapping.Enable();
+        }
+
+        private void OnDisable()
+        {
+            inputMapping.Disable();
+        }
+        #endregion
     }
 }
