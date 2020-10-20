@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class ProjectileBehavior : ProjectileData
 {
-    public IEnumerator Shoot(Transform target)
+    public IEnumerator Shoot(RectTransform target)
     {
         gameObject.SetActive(true);
 
         transform.position = playerTransform.position;
-        transform.LookAt(target);
+        transform.LookAt(Camera.main.ScreenToWorldPoint(target.position), transform.up);
 
         while (lifetime >= 0)
         {

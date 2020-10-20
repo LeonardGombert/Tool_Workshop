@@ -12,7 +12,7 @@ namespace Gameplay.Player
 
         public Transform playerTransform;
         public Transform projectileContainer;
-        public Transform playerReticule;
+        public RectTransform playerReticule;
 
         private void Awake()
         {
