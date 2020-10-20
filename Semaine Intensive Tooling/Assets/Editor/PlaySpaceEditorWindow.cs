@@ -11,7 +11,6 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         PlaySpaceEditorWindow window = EditorWindow.GetWindow(typeof(PlaySpaceEditorWindow)) as PlaySpaceEditorWindow;
         window.Show();
-
     }
 
     public static void InitWithContent(MovementBehavior _movementBehavior)

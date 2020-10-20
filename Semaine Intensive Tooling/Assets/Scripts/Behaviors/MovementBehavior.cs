@@ -21,8 +21,10 @@ namespace Gameplay.Player
             camera = Camera.main; // get reference with editor
 
             // draw these in editor with Handles
-            constraints1 = new Vector3(0 + 100, 0 + 100);
-            constraints2 = new Vector3(camera.pixelWidth - 100, camera.pixelHeight - 100);
+            playSpace.botLeft = 100;
+            playSpace.topLeft = 100;
+            playSpace.botRight = camera.pixelWidth - 100;
+            playSpace.topRight = camera.pixelHeight - 100;
         }
 
         void Start()
@@ -38,8 +40,8 @@ namespace Gameplay.Player
 
                 Vector3 targetPos = camera.WorldToScreenPoint(transform.position + movement);
 
-                if (targetPos.x > constraints1.x && targetPos.y > constraints1.y &&
-                    targetPos.x < constraints2.x && targetPos.y < constraints2.y)
+                if (targetPos.x > playSpace.botLeft && targetPos.y > playSpace.topLeft &&
+                    targetPos.x < playSpace.botRight && targetPos.y < playSpace.topRight)
                     transform.position += movement;
 
                 yield return null;

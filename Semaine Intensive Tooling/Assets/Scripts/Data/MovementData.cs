@@ -4,11 +4,16 @@ namespace Gameplay.Player
 {
     public class MovementData : MonoBehaviour
     {
-        public Vector3 moveDirection;
-        protected float movementSpeed = 22f;
+        [HideInInspector] public Vector3 moveDirection;
+        [HideInInspector] public float movementSpeed = 22f;
 
         protected Camera camera;
-        protected Vector3 constraints1;
-        protected Vector3 constraints2;
+        [HideInInspector] public Vector4Bounds playSpace = new Vector4Bounds();
     }
+}
+
+[System.Serializable]
+public struct Vector4Bounds
+{
+    public float botLeft, topLeft, botRight, topRight;
 }
