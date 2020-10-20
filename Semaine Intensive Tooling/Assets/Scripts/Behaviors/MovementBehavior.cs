@@ -23,8 +23,8 @@ namespace Gameplay.Player
             // draw these in editor with Handles
             playSpace.botLeft = 100;
             playSpace.topLeft = 100;
-            playSpace.botRight = camera.pixelWidth - 100;
-            playSpace.topRight = camera.pixelHeight - 100;
+            /*playSpace.botRight = camera.pixelWidth - 100;
+            playSpace.topRight = camera.pixelHeight - 100;*/
         }
 
         void Start()

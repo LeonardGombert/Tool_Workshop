@@ -2120,10 +2120,10 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 0, z: 0}
   movementSpeed: 22
   playSpace:
-    botLeft: 2
-    topLeft: 0
-    botRight: 0
-    topRight: 0
+    botLeft: 100
+    topLeft: 100
+    botRight: 800
+    topRight: 800
 --- !u!1 &382589130
 GameObject:
   m_ObjectHideFlags: 0
