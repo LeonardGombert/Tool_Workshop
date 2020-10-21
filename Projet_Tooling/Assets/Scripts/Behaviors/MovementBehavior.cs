@@ -36,7 +36,7 @@ namespace Gameplay.Player
             {
                 var movement = moveDirection * movementSpeed * Time.deltaTime;
 
-                Vector3 targetPos = camera.WorldToScreenPoint(transform.position + movement);
+                Vector3 targetPos = Camera.main.WorldToScreenPoint(transform.position + movement);
 
                 if (targetPos.x > playSpace.leftX && targetPos.y > playSpace.leftY &&
                     targetPos.x < playSpace.rightX && targetPos.y < playSpace.rightY)

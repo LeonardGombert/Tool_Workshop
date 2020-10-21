@@ -2123,9 +2123,9 @@ MonoBehaviour:
   movementSpeed: 22
   playSpace:
     leftX: 0
-    leftY: 0
-    rightX: 100
-    rightY: 100
+    leftY: 299
+    rightX: 610
+    rightY: 299
 --- !u!1 &382589130
 GameObject:
   m_ObjectHideFlags: 0

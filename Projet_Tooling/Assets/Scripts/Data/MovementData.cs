@@ -8,7 +8,6 @@ namespace Gameplay.Player
         [HideInInspector] public Vector3 screenSpacePosition;
         [HideInInspector] public float movementSpeed = 22f;
 
-        protected Camera camera;
         [HideInInspector] public Vector4Bounds playSpace = new Vector4Bounds();
     }
 }
