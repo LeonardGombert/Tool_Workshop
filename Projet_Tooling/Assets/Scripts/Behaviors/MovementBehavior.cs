@@ -18,13 +18,11 @@ namespace Gameplay.Player
             movementAcion.performed += ctx => moveDirection = ctx.ReadValue<Vector2>();
             movementAcion.canceled += ctx => moveDirection = Vector3.zero;
 
-            camera = Camera.main; // get reference with editor
-
             // draw these in editor with Handles
             playSpace.leftX = 100;
             playSpace.leftY = 100;
-            playSpace.rightX = camera.pixelWidth - 100;
-            playSpace.rightY = camera.pixelHeight - 100;
+            playSpace.rightX = Camera.main.pixelWidth - 100;
+            playSpace.rightY = Camera.main.pixelHeight - 100;
         }
 
         void Start()
@@ -43,6 +41,8 @@ namespace Gameplay.Player
                 if (targetPos.x > playSpace.leftX && targetPos.y > playSpace.leftY &&
                     targetPos.x < playSpace.rightX && targetPos.y < playSpace.rightY)
                     transform.position += movement;
+
+                screenSpacePosition = transform.position;
 
                 yield return null;
             }

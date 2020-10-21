@@ -52,12 +52,18 @@ public class SomeCommonComponentInspector : Editor
 
     private ReorderableList SetupList(ReorderableList emptyList)
     {
+        // you can declare the function as a lambad expression
         emptyList.drawHeaderCallback += (Rect rect) =>
         {
             EditorGUI.LabelField(rect, "This is the header for my list");
         };
 
+        // or as a full method
         emptyList.drawElementCallback += DrawMyListElement;
+        emptyList.onReorderCallback += MyListHasBeenReordered;
+        emptyList.onAddCallback += MyListAddCallback;
+        emptyList.onRemoveCallback += MyListRemoveCallback;
+        emptyList.elementHeightCallback += GetArrayElementHeight;
 
         return emptyList;
     }
@@ -68,6 +74,29 @@ public class SomeCommonComponentInspector : Editor
     {
         SerializedProperty elementProp = myArrayProperty.GetArrayElementAtIndex(index);
         EditorGUI.PropertyField(rect, elementProp);
+    }
+
+    float GetArrayElementHeight(int index)
+    {
+        // make each element the size of its index (haha)
+        return (float)(index+1) * (EditorGUIUtility.singleLineHeight + 1);
+    }
+
+    void MyListHasBeenReordered(ReorderableList list)
+    {
+        // some reorder code
+    }
+
+    void MyListAddCallback(ReorderableList list)
+    {
+        Debug.Log("added an element at index " + list.index.ToString());
+        myArrayProperty.InsertArrayElementAtIndex(list.index);
+    }
+
+    void MyListRemoveCallback(ReorderableList list)
+    {
+        Debug.Log("removed an element at index " + list.index.ToString());
+        myArrayProperty.DeleteArrayElementAtIndex(list.index);
     }
 
     public override void OnInspectorGUI()

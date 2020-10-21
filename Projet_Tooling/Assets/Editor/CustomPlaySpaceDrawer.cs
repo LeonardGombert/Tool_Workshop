@@ -30,6 +30,7 @@ public class CustomPlaySpaceDrawer : PropertyDrawer
         EditorGUIUtility.labelWidth = 14f;
         EditorGUI.EndProperty();
     }
+
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         return Screen.width < 333 ? (16f + 18f) : 16f;

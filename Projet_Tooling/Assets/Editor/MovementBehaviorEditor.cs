@@ -21,8 +21,6 @@ public class MovementBehaviorEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
-
         serializedObject.Update();
         EditorGUILayout.BeginVertical();
 
@@ -41,6 +39,8 @@ public class MovementBehaviorEditor : Editor
             EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("leftY"), GUIContent.none);
             EditorGUILayout.EndHorizontal();
         }
+
+        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
 
         EditorGUILayout.EndVertical();
         serializedObject.ApplyModifiedProperties();
