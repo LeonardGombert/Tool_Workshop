@@ -111,8 +111,16 @@ public class PlaySpaceEditorWindow : EditorWindow
             #endregion
 
             #region Change Rect Size with a slider
-            xScale = EditorGUILayout.Slider(xScale, 0, Camera.main.pixelWidth/2);
+            // create two label fields
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Playspace Width");
+            xScale = EditorGUILayout.Slider(xScale, 0, Camera.main.pixelWidth / 2);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Playspace Height");
             yScale = EditorGUILayout.Slider(yScale, 0, Camera.main.pixelHeight/2);
+            EditorGUILayout.EndHorizontal();
 
             botLeft.center = ScaleGameToScreen(new Vector2(xScale, yScale));
             topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xScale, Camera.main.pixelHeight - yScale));
@@ -144,6 +152,8 @@ public class PlaySpaceEditorWindow : EditorWindow
             movementBehavior.playSpace.rightY = appliedBounds.rightY;
             #endregion
         }
+
+
 
         Repaint();
     }
