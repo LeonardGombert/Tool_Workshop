@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,16 +45,20 @@ public class LevelTrackEditorWIndow : EditorWindow
 
         for (int x = 50; x < screenSize.x; x += rectSize + 2)
         {
-            for (int y = (int)yes; y < position.height / 2; y += rectSize + 2)
+            for (int y = (int)yes; y < screenSize.y; y += rectSize + 2)
             {
                 Rect newRect = new Rect(x, y, rectSize, rectSize);
                 newRect.center = new Vector2(x, y);
 
-                EditorGUI.DrawRect(newRect, Color.white);
+                //EditorGUI.DrawRect(newRect, Color.white);
 
-                if (newRect.Contains(cur.mousePosition)) EditorGUI.DrawRect(newRect, Color.red);
+                if (newRect.Contains(cur.mousePosition)) myRects.Add(newRect); //ChangeRectColor(newRect);
                 else EditorGUI.DrawRect(newRect, Color.white);
 
+                foreach (Rect item in myRects)
+                {
+                    EditorGUI.DrawRect(item, Color.red);
+                }
             }
         }
 
@@ -65,5 +70,10 @@ public class LevelTrackEditorWIndow : EditorWindow
         // make each Rect clickable
         // draw the player (to scale)
         #endregion
+    }
+
+    private void ChangeRectColor(Rect newRect)
+    {
+        throw new NotImplementedException();
     }
 }
