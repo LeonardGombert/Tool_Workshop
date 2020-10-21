@@ -8,12 +8,15 @@ public class PlaySpaceEditorWindow : EditorWindow
     MovementBehavior movementBehavior;
     Vector4Bounds windowSize;
 
-    Rect screenSpace;
+    Rect screenSpace, playerRect;
+    Rect botLeft, topRight, topLeft, botRight;
+
     Vector2 leftPlayerspace, rightPlayspace;
     Vector3 scaledPosition;
 
-    Rect botLeft, topRight, topLeft, botRight;
-    bool track = false;
+    float scale = 1.0f;
+
+
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -59,9 +62,15 @@ public class PlaySpaceEditorWindow : EditorWindow
             Vector3 screenPos = Camera.main.WorldToScreenPoint(movementBehavior.screenSpacePosition);
             scaledPosition = ScaleGameToScreen(screenPos);
 
-            // draw the virtual screen
+            // draw the player... 
+            playerRect = new Rect(0, 0, 10, 10);
+
+            // ...and center him
+            playerRect.center = new Vector2(scaledPosition.x, scaledPosition.y);
+
+            // draw the virtual screen and the player
             EditorGUI.DrawRect(screenSpace, Color.black);
-            EditorGUI.DrawRect(new Rect(scaledPosition.x, scaledPosition.y, 10, 10), Color.green);
+            EditorGUI.DrawRect(playerRect, Color.green);
             #endregion
 
             #region Calculate Virtual Screen Playspace
@@ -69,11 +78,17 @@ public class PlaySpaceEditorWindow : EditorWindow
             leftPlayerspace = ScaleGameToScreen(new Vector2(movementBehavior.playSpace.leftX, movementBehavior.playSpace.leftY));
             rightPlayspace = ScaleGameToScreen(new Vector2(movementBehavior.playSpace.rightX, movementBehavior.playSpace.rightY));
 
-            // calculate position of playSpace extremities
-            botLeft = new Rect(leftPlayerspace.x, leftPlayerspace.y, 10, 10);
-            topRight = new Rect(rightPlayspace.x, rightPlayspace.y, 10, 10);
-            topLeft = new Rect(leftPlayerspace.x, rightPlayspace.y, 10, 10);
-            botRight = new Rect(rightPlayspace.x, leftPlayerspace.y, 10, 10);
+            // create the Rects...
+            botLeft = new Rect(0, 0, 10, 10);
+            topRight = new Rect(0, 0, 10, 10);
+            topLeft = new Rect(0, 0, 10, 10);
+            botRight = new Rect(0, 0, 10, 10);
+
+            // ... and center them on the position of playSpace extremities
+            botLeft.center = new Vector2(leftPlayerspace.x, leftPlayerspace.y);
+            topRight.center = new Vector2(rightPlayspace.x, rightPlayspace.y);
+            topLeft.center = new Vector2(leftPlayerspace.x, rightPlayspace.y);
+            botRight.center = new Vector2(rightPlayspace.x, leftPlayerspace.y);
             #endregion
 
             #region Draw Playspace on Virtual Screen
@@ -93,14 +108,29 @@ public class PlaySpaceEditorWindow : EditorWindow
             Handles.EndGUI();
             #endregion
 
-            #region Apply Any Changes in Editor Window to Player Values
+            #region Check if moving a rect
+            // if the user clicks on a square
+            if (botLeft.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseDown)
+            {
+
+            }
+
+            scale = EditorGUI.Slider(new Rect(5, 5, 150, 20), scale, 10, 200);
+
+            botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
+            botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
+            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
+            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
+            #endregion
+
+            #region LAST STEP : Apply Any Changes in Editor Window to Player Values
             // assign the virtual screen values to a new Vector4    
             Vector4Bounds calcBounds = new Vector4Bounds();
-            calcBounds.leftX = botLeft.x; //coords in pixels
-            calcBounds.leftY = botLeft.y;
-            calcBounds.rightX = topRight.x;
-            calcBounds.rightY = topRight.y;
-                        
+            calcBounds.leftX = botLeft.center.x; //coords in pixels
+            calcBounds.leftY = botLeft.center.y;
+            calcBounds.rightX = topRight.center.x;
+            calcBounds.rightY = topRight.center.y;
+
             // convert the virtual screen values to Game Screen Values
             Vector4Bounds appliedBounds = ScaleScreenToGame(calcBounds);
             movementBehavior.playSpace.leftX = appliedBounds.leftX;
@@ -111,30 +141,6 @@ public class PlaySpaceEditorWindow : EditorWindow
         }
 
         Repaint();
-
-        #region comment
-        /*if (topLeft.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseDown)
-        {
-            track = !track;
-            if (track == false)
-            {
-                Vector2 left = ScaleScreenToGame(new Vector2(botLeft.x, topLeft.y));
-                movementBehavior.playSpace.leftY = left.y;
-
-            }
-        }
-        if (track) TrackMouse(ref topLeft);*/
-        #endregion
-    }
-
-    private Vector4Bounds ScaleScreenToGame(Vector4Bounds screenPosition)
-    {
-        double leftX = CustomScaler.Scale(screenPosition.leftX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
-        double leftY = CustomScaler.Scale(screenPosition.leftY, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
-        double rightX = CustomScaler.Scale(screenPosition.rightX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
-        double rightY = CustomScaler.Scale(screenPosition.rightY, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
-
-        return new Vector4Bounds((float)leftX, (float)leftY, (float)rightX, (float)rightY);
     }
 
     // attach to Mouse
@@ -144,6 +150,17 @@ public class PlaySpaceEditorWindow : EditorWindow
         Vector2 scaledMousePos = ScaleWindowToScreen(mousePos);
 
         myRect.position = mousePos;
+    }
+
+    #region Scaling Methods
+    private Vector4Bounds ScaleScreenToGame(Vector4Bounds screenPosition)
+    {
+        double leftX = CustomScaler.Scale(screenPosition.leftX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double leftY = CustomScaler.Scale(screenPosition.leftY, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
+        double rightX = CustomScaler.Scale(screenPosition.rightX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double rightY = CustomScaler.Scale(screenPosition.rightY, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
+
+        return new Vector4Bounds((float)leftX, (float)leftY, (float)rightX, (float)rightY);
     }
 
     private Vector2 ScaleGameToScreen(Vector2 screenPos)
@@ -161,4 +178,5 @@ public class PlaySpaceEditorWindow : EditorWindow
 
         return new Vector2((float)xPos, (float)yPos);
     }
+    #endregion
 }

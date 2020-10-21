@@ -17,12 +17,6 @@ namespace Gameplay.Player
             movementAcion = inputMapping.Player.Move;
             movementAcion.performed += ctx => moveDirection = ctx.ReadValue<Vector2>();
             movementAcion.canceled += ctx => moveDirection = Vector3.zero;
-
-            // draw these in editor with Handles
-            playSpace.leftX = 100;
-            playSpace.leftY = 100;
-            playSpace.rightX = Camera.main.pixelWidth - 100;
-            playSpace.rightY = Camera.main.pixelHeight - 100;
         }
 
         void Start()
