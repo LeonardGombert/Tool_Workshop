@@ -31,14 +31,14 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         if (movementBehavior != null)
         {
-            Rect myRect = new Rect(0, 0, Screen.width / 2, Screen.height / 2);
+            Rect myRect = new Rect(0, 0, position.width / 2, position.width / 2);
             myRect.center = new Vector2(position.width / 2, position.height / 2);
             EditorGUI.DrawRect(myRect, Color.black);
 
-            windowSize.leftX = myRect.center.x - Screen.width / 4;
-            windowSize.leftY = myRect.center.y + Screen.height / 4;
-            windowSize.rightX = myRect.center.x + Screen.width / 4;
-            windowSize.rightY = myRect.center.y - Screen.height / 4;
+            windowSize.leftX = myRect.center.x - myRect.width / 2;
+            windowSize.leftY = myRect.center.y + myRect.height / 2;
+            windowSize.rightX = myRect.center.x + myRect.width / 2;
+            windowSize.rightY = myRect.center.y - myRect.height / 2;
             
             float height = Camera.main.orthographicSize * 6.0f;
 

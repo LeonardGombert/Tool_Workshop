@@ -408,7 +408,7 @@ GameObject:
   - component: {fileID: 1137352405}
   - component: {fileID: 1137352404}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: Reorderable List
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -448,6 +448,11 @@ MonoBehaviour:
   myString: 
   myVector: {x: 0, y: 0, z: 0}
   myColor: {r: 0, g: 0, b: 0, a: 0}
+  myArray:
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1137352405
 Transform:
   m_ObjectHideFlags: 0

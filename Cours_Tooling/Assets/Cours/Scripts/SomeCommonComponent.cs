@@ -14,4 +14,6 @@ public class SomeCommonComponent : MonoBehaviour
     public string myString;
     public Vector3 myVector;
     public Color myColor;
+
+    public Color[] myArray;
 }
