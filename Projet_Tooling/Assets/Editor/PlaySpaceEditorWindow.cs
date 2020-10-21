@@ -108,19 +108,23 @@ public class PlaySpaceEditorWindow : EditorWindow
             Handles.EndGUI();
             #endregion
 
-            #region Check if moving a rect
-            // if the user clicks on a square
-            if (botLeft.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseDown)
+            #region Change Rect Size with a slider
+            EditorGUI.BeginChangeCheck();
+            var myFloatForUndoCheck = scale;
+            myFloatForUndoCheck = EditorGUI.Slider(new Rect(5, 5, 150, 20), myFloatForUndoCheck, 10, 200);
+            if (EditorGUI.EndChangeCheck())
             {
-
+                Undo.RecordObject(this, "Changed Slider Value");
+                scale = myFloatForUndoCheck;
             }
 
-            scale = EditorGUI.Slider(new Rect(5, 5, 150, 20), scale, 10, 200);
+            //scale = EditorGUI.Slider(new Rect(5, 5, 150, 20), scale, 10, 200);
 
             botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
             botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
             topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
             topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
+            
             #endregion
 
             #region LAST STEP : Apply Any Changes in Editor Window to Player Values
