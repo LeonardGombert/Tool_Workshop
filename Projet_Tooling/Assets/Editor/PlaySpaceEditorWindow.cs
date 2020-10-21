@@ -19,15 +19,14 @@ public class PlaySpaceEditorWindow : EditorWindow
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
     {
-        PlaySpaceEditorWindow window = EditorWindow.GetWindow(typeof(PlaySpaceEditorWindow)) as PlaySpaceEditorWindow;
+        PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
         window.Show();
-
-        EditorApplication.modifierKeysChanged += window.Repaint;
     }
 
+    [MenuItem("Window/Playspace Editor Window %w")]
     public static void InitWithContent(MovementBehavior _movementBehavior)
     {
-        PlaySpaceEditorWindow window = EditorWindow.GetWindow(typeof(PlaySpaceEditorWindow)) as PlaySpaceEditorWindow;
+        PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
         window.movementBehavior = _movementBehavior;
         window.Show();
 
