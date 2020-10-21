@@ -96,7 +96,19 @@ public class PlaySpaceEditorWindow : EditorWindow
             #region Apply Any Changes in Editor Window to Player Values
             // convert the virtual screen values to game window values
 
-            Vector4Bounds yes = new Vector4Bounds();
+            Vector4Bounds calcBounds = new Vector4Bounds();
+            calcBounds.leftX = botLeft.x; //coords in pixels
+            calcBounds.leftY = topLeft.y;
+            calcBounds.rightX = botRight.x;
+            calcBounds.rightY = topRight.y;
+
+            Vector4Bounds appliedBounds = ScaleScreenToGame(calcBounds);
+            movementBehavior.playSpace.leftX = appliedBounds.leftX;
+            movementBehavior.playSpace.leftY = appliedBounds.leftY;
+            movementBehavior.playSpace.rightX = appliedBounds.rightX;
+            movementBehavior.playSpace.rightY = appliedBounds.rightY;
+
+            /*
             Vector2 botLeft2 = ScaleScreenToGame(new Vector2(botLeft.x, topLeft.y));
             Vector2 topLeft2 = ScaleScreenToGame(new Vector2(topLeft.x, topLeft.y));
             Vector2 botRight2 = ScaleScreenToGame(new Vector2(botRight.x, topRight.y));
@@ -106,7 +118,7 @@ public class PlaySpaceEditorWindow : EditorWindow
             movementBehavior.playSpace.leftX = botLeft2.x;
             movementBehavior.playSpace.leftY = topLeft2.y;
             movementBehavior.playSpace.rightX = botRight2.x;
-            movementBehavior.playSpace.rightY = topRight2.y;
+            movementBehavior.playSpace.rightY = topRight2.y;*/
             #endregion
         }
 
@@ -125,6 +137,17 @@ public class PlaySpaceEditorWindow : EditorWindow
         }
         if (track) TrackMouse(ref topLeft);*/
         #endregion
+    }
+
+    private Vector4Bounds ScaleScreenToGame(Vector4Bounds screenPosition)
+    {
+        double leftX = CustomScaler.Scale(screenPosition.leftX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double leftY = CustomScaler.Scale(screenPosition.leftY, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double rightX = CustomScaler.Scale(screenPosition.rightX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double rightY = CustomScaler.Scale(screenPosition.rightY, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
+        double yPos = CustomScaler.Scale(screenPos.y, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
+
+        return new Vector4Bounds((float)leftX, (float)leftY, (float)rightX, (float)rightY);
     }
 
     // attach to Mouse
@@ -148,14 +171,6 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         double xPos = CustomScaler.Scale(screenPos.x, 0, Screen.width, windowSize.leftX, windowSize.rightX);
         double yPos = CustomScaler.Scale(screenPos.y, 0, Screen.height, windowSize.leftY, windowSize.rightY);
-
-        return new Vector2((float)xPos, (float)yPos);
-    }
-
-    private Vector2 ScaleScreenToGame(Vector2 screenPos)
-    {
-        double xPos = CustomScaler.Scale(screenPos.x, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
-        double yPos = CustomScaler.Scale(screenPos.y, windowSize.leftY, windowSize.rightY, 0, Camera.main.pixelHeight);
 
         return new Vector2((float)xPos, (float)yPos);
     }
