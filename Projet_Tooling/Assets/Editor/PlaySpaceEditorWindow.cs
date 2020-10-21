@@ -14,15 +14,15 @@ public class PlaySpaceEditorWindow : EditorWindow
     Vector2 leftPlayerspace, rightPlayspace;
     Vector3 scaledPosition;
 
-    float scale = 1.0f;
-
-
+    float xScale = 100f, yScale = 300f;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
     {
         PlaySpaceEditorWindow window = EditorWindow.GetWindow(typeof(PlaySpaceEditorWindow)) as PlaySpaceEditorWindow;
         window.Show();
+
+        EditorApplication.modifierKeysChanged += window.Repaint;
     }
 
     public static void InitWithContent(MovementBehavior _movementBehavior)
@@ -30,6 +30,8 @@ public class PlaySpaceEditorWindow : EditorWindow
         PlaySpaceEditorWindow window = EditorWindow.GetWindow(typeof(PlaySpaceEditorWindow)) as PlaySpaceEditorWindow;
         window.movementBehavior = _movementBehavior;
         window.Show();
+
+        EditorApplication.modifierKeysChanged += window.Repaint;
     }
 
     private void OnEnable()
@@ -109,22 +111,21 @@ public class PlaySpaceEditorWindow : EditorWindow
             #endregion
 
             #region Change Rect Size with a slider
-            EditorGUI.BeginChangeCheck();
+            xScale = EditorGUILayout.Slider(xScale, 0, Camera.main.pixelWidth/2);
+            yScale = EditorGUILayout.Slider(yScale, 0, Camera.main.pixelHeight/2);
+
+            botLeft.center = ScaleGameToScreen(new Vector2(xScale, yScale));
+            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xScale, Camera.main.pixelHeight - yScale));
+
+            //UNDO SLIDER
+            /*EditorGUI.BeginChangeCheck();
             var myFloatForUndoCheck = scale;
             myFloatForUndoCheck = EditorGUI.Slider(new Rect(5, 5, 150, 20), myFloatForUndoCheck, 10, 200);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(this, "Changed Slider Value");
                 scale = myFloatForUndoCheck;
-            }
-
-            //scale = EditorGUI.Slider(new Rect(5, 5, 150, 20), scale, 10, 200);
-
-            botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
-            botLeft.center = ScaleGameToScreen(new Vector2(scale, scale));
-            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
-            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - scale, Camera.main.pixelHeight - scale));
-            
+            }*/
             #endregion
 
             #region LAST STEP : Apply Any Changes in Editor Window to Player Values
