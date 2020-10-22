@@ -13,7 +13,8 @@ public class LevelTrackEditorWIndow : EditorWindow
     Vector2 screenSize;
 
     // grid paramaters
-    int gridHeight = 20;
+    int gridHeight = 6;
+    int gridWidth = 50;
     int rectSize = 20;
 
     enum Brush
@@ -51,11 +52,11 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region Draw Track visuals
-        int startingHeight = (int)(position.height * 0.5f);
+        int startingHeight = 50; //(int)(position.height * 0.5f);
         int startingWidth = 50;
 
         // draw a grid of screen size length and game screen size height
-        for (int i = 1, x = startingWidth; x < screenSize.x; x += rectSize + 2)
+        for (int i = 1, x = startingWidth; x < startingWidth + (rectSize + 2) * gridWidth; x += rectSize + 2)
         {
             for (int y = startingHeight; y < startingHeight + (rectSize+2)* gridHeight; y += rectSize+2, i++)
             {

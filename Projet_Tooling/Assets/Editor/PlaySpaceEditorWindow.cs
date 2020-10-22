@@ -14,7 +14,7 @@ public class PlaySpaceEditorWindow : EditorWindow
     Vector2 leftPlayerspace, rightPlayspace;
     Vector3 scaledPosition;
 
-    float xScale = 100f, yScale = 300f;
+    float xScale = 100f, yScale = 100f;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -37,11 +37,6 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         if (movementBehavior == null) movementBehavior = GameObject.Find("Player").GetComponent<MovementBehavior>();
         topLeft = new Rect(leftPlayerspace.x, rightPlayspace.y, 10, 10);
-
-        movementBehavior.playSpace.leftX = 100;
-        movementBehavior.playSpace.leftY = 100;
-        movementBehavior.playSpace.rightX = Camera.main.pixelWidth - 100;
-        movementBehavior.playSpace.rightY = Camera.main.pixelHeight - 100;
     }
 
     private void OnGUI()
