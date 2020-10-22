@@ -42,7 +42,8 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     private void OnGUI()
     {
-        tunnelColumns = (int)Camera.main.fieldOfView / 10 + 1;
+        tunnelColumns = (int)Camera.main.fieldOfView / 10;
+        if (tunnelColumns % 2 == 0) tunnelColumns++;
         Event cur = Event.current;
 
         #region Enum Brush GUI
