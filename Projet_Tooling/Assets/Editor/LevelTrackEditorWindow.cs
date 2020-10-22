@@ -2,8 +2,10 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class LevelTrackEditorWIndow : EditorWindow
 {
@@ -14,6 +16,8 @@ public class LevelTrackEditorWIndow : EditorWindow
     List<int> playSpaceRectsIndexes = new List<int>();
     List<Vector2> playspaceRectCoords = new List<Vector2>();
     List<GameObject> playspaceList = new List<GameObject>();
+
+    List<PlayspaceValue> myList = new List<PlayspaceValue>();
 
     // grid paramaters
     int tunnelColumns;
@@ -31,6 +35,8 @@ public class LevelTrackEditorWIndow : EditorWindow
     int chunkSize = 300;
 
     Brush myBrush;
+
+    Object playspaceValuesObject;
 
     GameObject obstaclePrefab;
     GameObject playspaceChangePrefab;
@@ -93,6 +99,18 @@ public class LevelTrackEditorWIndow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
+
+        if(GUILayout.Button("Save Level Track"))
+        {
+            LevelTrack levelTrack = new LevelTrack();
+            levelTrack.obstacleRectCoords = obstacleRectCoords;
+            levelTrack.playspaceRectCoords = playspaceRectCoords;
+            levelTrack.playspaceValues = myList;
+
+            string json = JsonUtility.ToJson(levelTrack);
+            string path = "Assets/LevelTracks/NewLevelTrack.json";
+            File.WriteAllText(path, json);
+        }
         #endregion
 
         #region Calculate and Draw Track Grid
@@ -170,6 +188,19 @@ public class LevelTrackEditorWIndow : EditorWindow
             }
         }
         #endregion
+
+        foreach (Vector2 item in playspaceRectCoords)
+        {
+            Rect propertyRect = new Rect(0, 0, 100, 50);
+            propertyRect.center = new Vector2(item.x, item.y + 45);
+            playspaceValuesObject = EditorGUI.ObjectField(propertyRect, playspaceValuesObject, typeof(Object), true);
+            
+            if(playspaceValuesObject != null)
+            {
+                PlayspaceValue newObj = new PlayspaceValue(item, playspaceValuesObject);
+                if (!myList.Contains(newObj)) myList.Add(newObj);
+            }
+        }
 
         Repaint();
     }
