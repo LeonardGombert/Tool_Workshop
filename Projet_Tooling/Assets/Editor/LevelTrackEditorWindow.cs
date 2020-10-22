@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Gameplay.Player;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -37,6 +38,8 @@ public class LevelTrackEditorWIndow : EditorWindow
     Brush myEnum;
 
 
+    MovementBehavior movementBehavior;
+
     /*[MenuItem("Window/Level Track Editor Window %k")]
     public static void Init()
     {
@@ -53,8 +56,8 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     private void OnEnable()
     {
+        if (movementBehavior == null) movementBehavior = GameObject.Find("Player").GetComponent<MovementBehavior>();
     }
-
     private void OnGUI()
     {
         screenSize = new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
@@ -121,16 +124,23 @@ public class LevelTrackEditorWIndow : EditorWindow
 
         // convert grid length to Z player z depth position
 
-        Vector2 targetCoords = new Vector2(0, 0);
-        Debug.Log("My position is " + targetCoords);    
+        #region GET WORLD POINT TO TUNNEL POINT
+        /*Vector2 targetCoords = new Vector2(0, 0);
+        double depth = CustomScaler.Scale(targetCoords.x, 0, depthValue, startingDepthCoord, gridDepthCoord);
+        double height = CustomScaler.Scale(targetCoords.y, 0, Camera.main.pixelHeight, gridHeightCoord, startingHeightCoord);*/
+        #endregion
+
+        #region GET TUNNEL POINT TO WORLD POINT
+        Vector2 tunnelCoords = new Vector2(50, 204);
+        double depth2 = CustomScaler.Scale(tunnelCoords.x, startingDepthCoord, gridDepthCoord, 0, 100);
+        double height2 = CustomScaler.Scale(tunnelCoords.y, startingHeightCoord, gridHeightCoord, 0, Camera.main.pixelHeight);
+
+        Debug.Log("My tunnel position is " + tunnelCoords);
         Debug.Log("Grid Height is " + gridHeightCoord);
         Debug.Log("Grid Depth is " + gridDepthCoord);
-
-        double depth = CustomScaler.Scale(0, 0, depthValue, startingDepthCoord, gridDepthCoord);
-        double height = CustomScaler.Scale(0, 0, Camera.main.pixelHeight, gridHeightCoord, startingHeightCoord);
-
-        Debug.Log("My depth in screenspace is " + depth);
-        Debug.Log("My height in screenspace is " + height);
+        Debug.Log("My depth in screenspace is " + depth2);
+        Debug.Log("My height in screenspace is " + height2);
+        #endregion
 
         /*
         Debug.Log("Grid Camera height is " + Camera.main.pixelHeight);
