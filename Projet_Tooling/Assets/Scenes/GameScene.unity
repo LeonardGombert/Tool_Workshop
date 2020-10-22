@@ -2040,7 +2040,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 355406905}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.54, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2122,10 +2122,10 @@ MonoBehaviour:
   screenSpacePosition: {x: 0, y: 0, z: 0}
   movementSpeed: 22
   playSpace:
-    leftX: 86
-    leftY: 86
-    rightX: 685
-    rightY: 348
+    leftX: 100.000015
+    leftY: 100
+    rightX: 551
+    rightY: 307
 --- !u!1 &382589130
 GameObject:
   m_ObjectHideFlags: 0

@@ -152,16 +152,8 @@ public class PlaySpaceEditorWindow : EditorWindow
         Repaint();
     }
 
-    // attach to Mouse
-    private void TrackMouse(ref Rect myRect)
-    {
-        Vector2 mousePos = Event.current.mousePosition;
-        Vector2 scaledMousePos = ScaleWindowToScreen(mousePos);
-
-        myRect.position = mousePos;
-    }
-
     #region Scaling Methods
+    // used to scale an object's position in the Virtual Screen to the Player's Viewport
     private Vector4Bounds ScaleScreenToGame(Vector4Bounds screenPosition)
     {
         double leftX = CustomScaler.Scale(screenPosition.leftX, windowSize.leftX, windowSize.rightX, 0, Camera.main.pixelWidth);
@@ -172,18 +164,11 @@ public class PlaySpaceEditorWindow : EditorWindow
         return new Vector4Bounds((float)leftX, (float)leftY, (float)rightX, (float)rightY);
     }
 
+    // used to scale an object's position in  the Player's Viewport to the Virtual Screen
     private Vector2 ScaleGameToScreen(Vector2 screenPos)
     {
         double xPos = CustomScaler.Scale(screenPos.x, 0, Camera.main.pixelWidth, windowSize.leftX, windowSize.rightX);
         double yPos = CustomScaler.Scale(screenPos.y, 0, Camera.main.pixelHeight, windowSize.leftY, windowSize.rightY);
-
-        return new Vector2((float)xPos, (float)yPos);
-    }
-
-    private Vector2 ScaleWindowToScreen(Vector2 screenPos)
-    {
-        double xPos = CustomScaler.Scale(screenPos.x, 0, Screen.width, windowSize.leftX, windowSize.rightX);
-        double yPos = CustomScaler.Scale(screenPos.y, 0, Screen.height, windowSize.leftY, windowSize.rightY);
 
         return new Vector2((float)xPos, (float)yPos);
     }

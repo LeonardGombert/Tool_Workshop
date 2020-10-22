@@ -13,9 +13,14 @@ public class LevelTrackEditorWIndow : EditorWindow
     Vector2 screenSize;
 
     // grid paramaters
-    int gridHeight = 6;
+    int gridHeight = 7;
     int gridWidth = 50;
     int rectSize = 20;
+
+    // where does the grid start drawing ? 
+    int startingHeight = 50; //(int)(position.height * 0.5f);
+    int startingWidth = 50;
+    int p = 0;
 
     enum Brush
     {
@@ -40,6 +45,10 @@ public class LevelTrackEditorWIndow : EditorWindow
         window.Show();
     }
 
+    private void OnEnable()
+    {
+    }
+
     private void OnGUI()
     {
         screenSize = new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
@@ -52,13 +61,11 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region Draw Track visuals
-        int startingHeight = 50; //(int)(position.height * 0.5f);
-        int startingWidth = 50;
 
         // draw a grid of screen size length and game screen size height
         for (int i = 1, x = startingWidth; x < startingWidth + (rectSize + 2) * gridWidth; x += rectSize + 2)
         {
-            for (int y = startingHeight; y < startingHeight + (rectSize+2)* gridHeight; y += rectSize+2, i++)
+            for (int y = startingHeight; y < startingHeight + (rectSize + 2) * gridHeight; y += rectSize + 2, i++)
             {
                 Rect newRect = new Rect(x, y, rectSize, rectSize);
                 newRect.center = new Vector2(x, y);
@@ -85,7 +92,6 @@ public class LevelTrackEditorWIndow : EditorWindow
 
                         // else, iterate through the tiles until you find the bottom one, and draw them back to the top
                         else for (int l = i; l < i + gridHeight; l++) if (l % gridHeight == 0) for (int j = l; j >= l - (gridHeight - 1); j--) playSpaceRectsIndexes.Add(j);
-
                     }
                 }
 
@@ -100,6 +106,36 @@ public class LevelTrackEditorWIndow : EditorWindow
         }
         #endregion
 
+        #region Convert LevelTrack to gameSpace
+        // convert grid height to player screen size
+        // get top of cameraPos
+        // scale gridHeight to topOfCamPos
+        //spawn cube at gridHeight
+
+        // convert grid length to Z player z depth position
+
+        Vector3 topOfScreenCoords = new Vector3(startingWidth, startingHeight);
+
+        // assign the virtual screen values to a new Vector4    
+        Vector4Bounds calcBounds = new Vector4Bounds();
+        calcBounds.leftX = startingWidth; //coords in pixels
+        calcBounds.leftY = startingHeight;
+        calcBounds.rightX = (startingWidth + (rectSize + 2) * gridWidth) - rectSize + 2;
+        calcBounds.rightY = (startingHeight + (rectSize + 2) * gridHeight) - rectSize + 2;
+
+        double width = CustomScaler.Scale(topOfScreenCoords.x, calcBounds.leftX, calcBounds.rightX, 0, Camera.main.pixelWidth);
+        double height = CustomScaler.Scale(topOfScreenCoords.y, calcBounds.leftY, calcBounds.rightY, 0, Camera.main.pixelHeight);
+
+        Vector3 scaledPosition;
+        scaledPosition.x = (float)width;
+        scaledPosition.y = (float)height;
+        scaledPosition.z = 30;
+
+        for (int i = 0; p <= 1; p++)
+        {
+            GameObject newObject = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), scaledPosition, Quaternion.identity);
+        }
+        #endregion
         Repaint();
         // get screen size -> corridor height
         // have the amount of rects height as a parameter
