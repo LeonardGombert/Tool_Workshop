@@ -131,9 +131,11 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region GET TUNNEL POINT TO WORLD POINT
+
+        Vector2 screenToWorld = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, Camera.main.pixelHeight));
         Vector2 tunnelCoords = new Vector2(50, 204);
         double depth2 = CustomScaler.Scale(tunnelCoords.x, startingDepthCoord, gridDepthCoord, 0, 100);
-        double height2 = CustomScaler.Scale(tunnelCoords.y, startingHeightCoord, gridHeightCoord, 0, Camera.main.pixelHeight);
+        double height2 = CustomScaler.Scale(tunnelCoords.y, startingHeightCoord, gridHeightCoord, 0, screenToWorld.y);
 
         Debug.Log("My tunnel position is " + tunnelCoords);
         Debug.Log("Grid Height is " + gridHeightCoord);
