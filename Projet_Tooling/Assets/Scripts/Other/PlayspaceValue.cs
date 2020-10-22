@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct PlayspaceValue
 {
-    Vector2 playspaceTunnelCoords;
-    Object playspaceTunnelValues;
+    public Vector2 playspaceTunnelCoords;
+    public int playspaceWidth;
+    public int playspaceHeight;
 
-    public PlayspaceValue(Vector2 coords, Object values)
+    public PlayspaceValue(Vector2 coords, int playspaceWidth, int playspaceHeight)
     {
         this.playspaceTunnelCoords = coords;
-        this.playspaceTunnelValues = values;
+        this.playspaceWidth = playspaceWidth;
+        this.playspaceHeight = playspaceHeight;
     }
 }

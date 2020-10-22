@@ -38,5 +38,31 @@
       "x": 842.0,
       "y": 114.0
     }
+  ],
+  "playspaceValues": [
+    {
+      "playspaceTunnelCoords": {
+        "x": 556.0,
+        "y": 136.0
+      },
+      "playspaceWidth": 100,
+      "playspaceHeight": 0
+    },
+    {
+      "playspaceTunnelCoords": {
+        "x": 688.0,
+        "y": 92.0
+      },
+      "playspaceWidth": 100,
+      "playspaceHeight": 0
+    },
+    {
+      "playspaceTunnelCoords": {
+        "x": 842.0,
+        "y": 114.0
+      },
+      "playspaceWidth": 100,
+      "playspaceHeight": 0
+    }
   ]
 }

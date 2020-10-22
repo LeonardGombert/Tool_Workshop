@@ -17,7 +17,7 @@ public class LevelTrackEditorWIndow : EditorWindow
     List<Vector2> playspaceRectCoords = new List<Vector2>();
     List<GameObject> playspaceList = new List<GameObject>();
 
-    List<PlayspaceValue> myList = new List<PlayspaceValue>();
+    List<PlayspaceValue> playspaceValues = new List<PlayspaceValue>();
 
     // grid paramaters
     int tunnelColumns;
@@ -36,7 +36,7 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     Brush myBrush;
 
-    Object playspaceValuesObject;
+    List<PlayspaceScriptableObject> playspaceValuesObject = new List<PlayspaceScriptableObject>();
 
     GameObject obstaclePrefab;
     GameObject playspaceChangePrefab;
@@ -105,7 +105,7 @@ public class LevelTrackEditorWIndow : EditorWindow
             LevelTrack levelTrack = new LevelTrack();
             levelTrack.obstacleRectCoords = obstacleRectCoords;
             levelTrack.playspaceRectCoords = playspaceRectCoords;
-            levelTrack.playspaceValues = myList;
+            levelTrack.playspaceValues = playspaceValues;
 
             string json = JsonUtility.ToJson(levelTrack);
             string path = "Assets/LevelTracks/NewLevelTrack.json";
@@ -152,6 +152,7 @@ public class LevelTrackEditorWIndow : EditorWindow
                         if ((i % tunnelColumns) == 0)
                         {
                             playspaceRectCoords.Add(new Vector2(z, y));
+                            playspaceValuesObject.Add(null);
                             for (int j = i; j >= i - (tunnelColumns - 1); j--)
                                 playSpaceRectsIndexes.Add(j);
                         }
@@ -163,6 +164,7 @@ public class LevelTrackEditorWIndow : EditorWindow
                                 if (l % tunnelColumns == 0)
                                 {
                                     playspaceRectCoords.Add(new Vector2(z, y));
+                                    playspaceValuesObject.Add(null);
                                     for (int j = l; j >= l - (tunnelColumns - 1); j--)
                                         playSpaceRectsIndexes.Add(j);
                                 }
@@ -189,18 +191,25 @@ public class LevelTrackEditorWIndow : EditorWindow
         }
         #endregion
 
-        foreach (Vector2 item in playspaceRectCoords)
+        for (int i = 0; i <= playspaceRectCoords.Count; i++)
         {
-            Rect propertyRect = new Rect(0, 0, 100, 50);
-            propertyRect.center = new Vector2(item.x, item.y + 45);
-            playspaceValuesObject = EditorGUI.ObjectField(propertyRect, playspaceValuesObject, typeof(Object), true);
-            
-            if(playspaceValuesObject != null)
+            if(playspaceRectCoords.Count != 0)
             {
-                PlayspaceValue newObj = new PlayspaceValue(item, playspaceValuesObject);
-                if (!myList.Contains(newObj)) myList.Add(newObj);
+                Rect propertyRect = new Rect(0, 0, 100, 50);
+                propertyRect.center = new Vector2(playspaceRectCoords[i].x, playspaceRectCoords[i].y + 45);
+                playspaceValuesObject[i] = (PlayspaceScriptableObject)EditorGUI.ObjectField(propertyRect, playspaceValuesObject[i], typeof(PlayspaceScriptableObject), true);
+
+                if (playspaceValuesObject[i] != null)
+                {
+                    PlayspaceValue newObj = new PlayspaceValue();
+                    newObj.playspaceTunnelCoords = playspaceRectCoords[i];
+                    newObj.playspaceWidth = playspaceValuesObject[i].playspaceWidth;
+                    newObj.playspaceHeight = playspaceValuesObject[i].playspaceHeight;
+                    if (!playspaceValues.Contains(newObj)) playspaceValues.Add(newObj);
+                }
             }
         }
+        //playspaceValuesObject.Clear();
 
         Repaint();
     }
