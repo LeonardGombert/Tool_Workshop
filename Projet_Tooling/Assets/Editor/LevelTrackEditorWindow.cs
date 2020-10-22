@@ -13,14 +13,20 @@ public class LevelTrackEditorWIndow : EditorWindow
     Vector2 screenSize;
 
     // grid paramaters
-    int gridHeight = 7;
-    int gridWidth = 50;
+    int columnSize = 7;
+    int rowSize = 50;
     int rectSize = 20;
 
+    int gridDepthCoord;
+    int gridHeightCoord;
+
     // where does the grid start drawing ? 
-    int startingHeight = 50; //(int)(position.height * 0.5f);
-    int startingWidth = 50;
-    int p = 0;
+    int startingHeightCoord = 50; //(int)(position.height * 0.5f);
+    int startingDepthCoord = 50;
+    bool spawnedObject = false;
+
+
+    int depthValue = 200;
 
     enum Brush
     {
@@ -31,12 +37,12 @@ public class LevelTrackEditorWIndow : EditorWindow
     Brush myEnum;
 
 
-    [MenuItem("Window/Level Track Editor Window %k")]
+    /*[MenuItem("Window/Level Track Editor Window %k")]
     public static void Init()
     {
         LevelTrackEditorWIndow window = GetWindow<LevelTrackEditorWIndow>();
         window.Show();
-    }
+    }*/
 
     [MenuItem("Window/Level Track Editor Window %k")]
     public static void InitWithContent()
@@ -52,23 +58,24 @@ public class LevelTrackEditorWIndow : EditorWindow
     private void OnGUI()
     {
         screenSize = new Vector2(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
-        Event cur = Event.current;
 
         #region Track Player Inputs
+        Event cur = Event.current;
         myEnum = (Brush)EditorGUILayout.EnumPopup(myEnum);
-
         //if (cur.type == EventType.ScrollWheel && myEnum>0 && myEnum < Brush.obstacle + 1) myEnum += (int)Mathf.Sign(cur.delta.y);
         #endregion
 
         #region Draw Track visuals
+        gridDepthCoord = startingDepthCoord + (rectSize + 2) * rowSize;
+        gridHeightCoord = startingHeightCoord + (rectSize + 2) * columnSize;
 
         // draw a grid of screen size length and game screen size height
-        for (int i = 1, x = startingWidth; x < startingWidth + (rectSize + 2) * gridWidth; x += rectSize + 2)
+        for (int i = 1, z = startingDepthCoord; z < gridDepthCoord; z += rectSize + 2)
         {
-            for (int y = startingHeight; y < startingHeight + (rectSize + 2) * gridHeight; y += rectSize + 2, i++)
+            for (int y = startingHeightCoord; y < gridHeightCoord; y += rectSize + 2, i++)
             {
-                Rect newRect = new Rect(x, y, rectSize, rectSize);
-                newRect.center = new Vector2(x, y);
+                Rect newRect = new Rect(z, y, rectSize, rectSize);
+                newRect.center = new Vector2(z, y);
 
                 //if the tile to be drawn is a playspace change, draw it as green
                 if (playSpaceRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.green);
@@ -88,10 +95,10 @@ public class LevelTrackEditorWIndow : EditorWindow
                     else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !playSpaceRectsIndexes.Contains(i))
                     {
                         // if the player is clicking on a tile at the bottom of the screen
-                        if ((i % gridHeight) == 0) for (int j = i; j >= i - (gridHeight - 1); j--) playSpaceRectsIndexes.Add(j);
+                        if ((i % columnSize) == 0) for (int j = i; j >= i - (columnSize - 1); j--) playSpaceRectsIndexes.Add(j);
 
                         // else, iterate through the tiles until you find the bottom one, and draw them back to the top
-                        else for (int l = i; l < i + gridHeight; l++) if (l % gridHeight == 0) for (int j = l; j >= l - (gridHeight - 1); j--) playSpaceRectsIndexes.Add(j);
+                        else for (int l = i; l < i + columnSize; l++) if (l % columnSize == 0) for (int j = l; j >= l - (columnSize - 1); j--) playSpaceRectsIndexes.Add(j);
                     }
                 }
 
@@ -114,28 +121,34 @@ public class LevelTrackEditorWIndow : EditorWindow
 
         // convert grid length to Z player z depth position
 
-        Vector3 topOfScreenCoords = new Vector3(startingWidth, startingHeight);
+        Vector2 targetCoords = new Vector2(0, 0);
+        Debug.Log("My position is " + targetCoords);    
+        Debug.Log("Grid Height is " + gridHeightCoord);
+        Debug.Log("Grid Depth is " + gridDepthCoord);
 
-        // assign the virtual screen values to a new Vector4    
-        Vector4Bounds calcBounds = new Vector4Bounds();
-        calcBounds.leftX = startingWidth; //coords in pixels
-        calcBounds.leftY = startingHeight;
-        calcBounds.rightX = (startingWidth + (rectSize + 2) * gridWidth) - rectSize + 2;
-        calcBounds.rightY = (startingHeight + (rectSize + 2) * gridHeight) - rectSize + 2;
+        double depth = CustomScaler.Scale(0, 0, depthValue, startingDepthCoord, gridDepthCoord);
+        double height = CustomScaler.Scale(0, 0, Camera.main.pixelHeight, gridHeightCoord, startingHeightCoord);
 
-        double width = CustomScaler.Scale(topOfScreenCoords.x, calcBounds.leftX, calcBounds.rightX, 0, Camera.main.pixelWidth);
-        double height = CustomScaler.Scale(topOfScreenCoords.y, calcBounds.leftY, calcBounds.rightY, 0, Camera.main.pixelHeight);
+        Debug.Log("My depth in screenspace is " + depth);
+        Debug.Log("My height in screenspace is " + height);
+
+        /*
+        Debug.Log("Grid Camera height is " + Camera.main.pixelHeight);
 
         Vector3 scaledPosition;
-        scaledPosition.x = (float)width;
+        scaledPosition.x = 0;
         scaledPosition.y = (float)height;
-        scaledPosition.z = 30;
+        scaledPosition.z = (float)width;
 
-        for (int i = 0; p <= 1; p++)
+        Vector3 scaledPosition3 = Camera.main.ScreenToWorldPoint(targetCoords);
+
+        if(!spawnedObject)
         {
-            GameObject newObject = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), scaledPosition, Quaternion.identity);
-        }
+            GameObject newObject = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), scaledPosition3, Quaternion.identity);
+            spawnedObject = true;
+        }*/
         #endregion
+
         Repaint();
         // get screen size -> corridor height
         // have the amount of rects height as a parameter
