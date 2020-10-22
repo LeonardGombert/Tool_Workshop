@@ -125,23 +125,24 @@ public class LevelTrackEditorWIndow : EditorWindow
         // convert grid length to Z player z depth position
 
         #region GET WORLD POINT TO TUNNEL POINT
-        /*Vector2 targetCoords = new Vector2(0, 0);
-        double depth = CustomScaler.Scale(targetCoords.x, 0, depthValue, startingDepthCoord, gridDepthCoord);
-        double height = CustomScaler.Scale(targetCoords.y, 0, Camera.main.pixelHeight, gridHeightCoord, startingHeightCoord);*/
+        /*Vector2 targetCoords = new Vector2(movementBehavior.transform.position.x, movementBehavior.transform.position.y);
+        double playerX = CustomScaler.Scale(targetCoords.x, 0, depthValue, startingDepthCoord, gridDepthCoord);
+        double playerY = CustomScaler.Scale(targetCoords.y, 0, Camera.main.pixelHeight, gridHeightCoord, startingHeightCoord);*/
         #endregion
 
         #region GET TUNNEL POINT TO WORLD POINT
-
-        Vector2 screenToWorld = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, Camera.main.pixelHeight));
-        Vector2 tunnelCoords = new Vector2(50, 204);
+        Vector2 tunnelCoords = new Vector2(1150, 204);
         double depth2 = CustomScaler.Scale(tunnelCoords.x, startingDepthCoord, gridDepthCoord, 0, 100);
-        double height2 = CustomScaler.Scale(tunnelCoords.y, startingHeightCoord, gridHeightCoord, 0, screenToWorld.y);
 
-        Debug.Log("My tunnel position is " + tunnelCoords);
-        Debug.Log("Grid Height is " + gridHeightCoord);
-        Debug.Log("Grid Depth is " + gridDepthCoord);
+        //var frustumHeight = 2.0f * Camera.main.farClipPlane * Mathf.Tan(Camera.main.fieldOfView * 0.5f * Mathf.Deg2Rad);
+
+        double height2 = CustomScaler.Scale(tunnelCoords.y, startingHeightCoord, gridHeightCoord, Camera.main.orthographicSize * 6, -Camera.main.orthographicSize * 6);
+
+        /*Debug.Log("My tunnel position is " + tunnelCoords);
+        Debug.Log("Grid Height is " + gridHeightCoord);*/
         Debug.Log("My depth in screenspace is " + depth2);
-        Debug.Log("My height in screenspace is " + height2);
+        Debug.Log("My height in screenspace is  " + height2);
+        //Debug.Log("My height in screenspace is " + height2);
         #endregion
 
         /*
