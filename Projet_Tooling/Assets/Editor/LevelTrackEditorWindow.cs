@@ -15,27 +15,23 @@ public class LevelTrackEditorWIndow : EditorWindow
     List<int> playSpaceRectsIndexes = new List<int>();
 
     // grid paramaters
-    int columnSize = 7;
-    int rowSize = 50;
+    int tunnelColumns;
+    int tunelRows = 50;
     int rectSize = 20;
 
-    int gridDepthCoord;
-    int gridHeightCoord;
+    int tunnelGridDepth;
+    int tunnelGridHeight;
 
     // where does the grid start drawing ? 
-    int startingHeightCoord = 50; //(int)(position.height * 0.5f);
+    int startingHeightCoord = 70; //(int)(position.height * 0.5f);
     int startingDepthCoord = 50;
 
     // size of 1 Chunk (determines zdepth of the window in world position)
     int chunkSize = 300;
 
-    enum Brush
-    {
-        playSpaceTransition,
-        obstacle,
-    }
+    Brush myBrush;
 
-    Brush myEnum;
+    GameObject obstaclePrefab;
 
     [MenuItem("Window/Level Track Editor Window %k")]
     public static void InitWithContent()
@@ -46,23 +42,35 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     private void OnGUI()
     {
-        #region Track Player Inputs
+        tunnelColumns = (int)Camera.main.fieldOfView / 10 + 1;
         Event cur = Event.current;
-        myEnum = (Brush)EditorGUILayout.EnumPopup(myEnum);
+
+        #region Enum Brush GUI
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Current Brush");
+        myBrush = (Brush)EditorGUILayout.EnumPopup(myBrush);
         //if (cur.type == EventType.ScrollWheel && myEnum>0 && myEnum < Brush.obstacle + 1) myEnum += (int)Mathf.Sign(cur.delta.y);
         #endregion
 
-        #region Draw All Obstacles in Scene
+        #region PropertyFields GUI
+        obstaclePrefab = EditorGUILayout.ObjectField(obstaclePrefab, typeof(GameObject), true) as GameObject;
+        #endregion
+
+        #region Draw All Obstacles in Scene GUI
+        // Create a button that allows you to spawn the cubes in the world
         if (GUILayout.Button("Place Cubes"))
         {
             foreach (Vector2 item in obstacleRectCoords)
             {
                 Vector3 convertedCoords = ScaleToWorldSpace(item);
-                GameObject newObstacle = Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
+                GameObject newObstacle = 
+                    Instantiate(obstaclePrefab, 
+                    convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
                 obstaclesList.Add(newObstacle);
             }
         }
 
+        // Create a button that allows you to delete the spawned cubes
         if (GUILayout.Button("Delete Cubes"))
         {
             foreach (GameObject obstacle in obstaclesList)
@@ -70,16 +78,19 @@ public class LevelTrackEditorWIndow : EditorWindow
                 DestroyImmediate(obstacle, false);
             }
         }
+        EditorGUILayout.EndHorizontal();
+
         #endregion
 
         #region Calculate and Draw Track Grid
-        gridDepthCoord = startingDepthCoord + (rectSize + 2) * rowSize;
-        gridHeightCoord = startingHeightCoord + (rectSize + 2) * columnSize;
+        // calculate edges of the tunnel
+        tunnelGridDepth = startingDepthCoord + (rectSize + 2) * tunelRows;
+        tunnelGridHeight = startingHeightCoord + (rectSize + 2) * tunnelColumns;
 
         // draw a grid of screen size length and game screen size height
-        for (int i = 1, z = startingDepthCoord; z < gridDepthCoord; z += rectSize + 2)
+        for (int i = 1, z = startingDepthCoord; z < tunnelGridDepth; z += rectSize + 2)
         {
-            for (int y = startingHeightCoord; y < gridHeightCoord; y += rectSize + 2, i++)
+            for (int y = startingHeightCoord; y < tunnelGridHeight; y += rectSize + 2, i++)
             {
                 Rect newRect = new Rect(z, y, rectSize, rectSize);
                 newRect.center = new Vector2(z, y);
@@ -94,7 +105,7 @@ public class LevelTrackEditorWIndow : EditorWindow
                 else if (obstacleRectsIndexes.Contains(i)) GUI.Button(newRect, i.ToString());
                 else GUI.Button(newRect, i.ToString()); */
 
-                if (myEnum == Brush.playSpaceTransition)
+                if (myBrush == Brush.playSpaceTransition)
                 {
                     // if the player right clicks on an already green tile -> delete
                     if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && playSpaceRectsIndexes.Contains(i) && cur.button == 1) 
@@ -104,21 +115,21 @@ public class LevelTrackEditorWIndow : EditorWindow
                     else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !playSpaceRectsIndexes.Contains(i))
                     {
                         // if the player is clicking on a tile at the bottom of the screen
-                        if ((i % columnSize) == 0) 
-                            for (int j = i; j >= i - (columnSize - 1); j--) 
+                        if ((i % tunnelColumns) == 0) 
+                            for (int j = i; j >= i - (tunnelColumns - 1); j--) 
                                 playSpaceRectsIndexes.Add(j);
 
                         // else, iterate through the tiles until you find the bottom one, and draw them back to the top
                         else
-                            for (int l = i; l < i + columnSize; l++) 
-                                if (l % columnSize == 0) 
-                                    for (int j = l; j >= l - (columnSize - 1); j--) 
+                            for (int l = i; l < i + tunnelColumns; l++) 
+                                if (l % tunnelColumns == 0) 
+                                    for (int j = l; j >= l - (tunnelColumns - 1); j--) 
                                         playSpaceRectsIndexes.Add(j);
                     }
                 }
 
                 // if the player right clicks on an already green tile -> delete
-                if (myEnum == Brush.obstacle)
+                if (myBrush == Brush.obstacle)
                 {
                     if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && obstacleRectsIndexes.Contains(i) && cur.button == 1)
                     {
@@ -137,19 +148,6 @@ public class LevelTrackEditorWIndow : EditorWindow
         }
         #endregion
 
-        #region Convert Obstacle Coordinates to Screen Space
-        // convert grid height to player screen size
-        // get top of cameraPos
-        // scale gridHeight to topOfCamPos
-        //spawn cube at gridHeight
-
-        // convert grid length to Z player z depth position
-        foreach (Vector2 obstacleCoords in obstacleRectCoords)
-        {
-            //Debug.Log(convertedObstacleCoords);
-        }
-        #endregion
-
         Repaint();
     }
 
@@ -158,8 +156,8 @@ public class LevelTrackEditorWIndow : EditorWindow
     private Vector3 ScaleToWorldSpace(Vector2 screenCoords)
     {
         Vector3 convertedObstacleCoords;
-        double depth = CustomScaler.Scale(screenCoords.x, startingDepthCoord, gridDepthCoord, 0, chunkSize);
-        double height = CustomScaler.Scale(screenCoords.y, startingHeightCoord, gridHeightCoord, Camera.main.fieldOfView / 10, -Camera.main.fieldOfView / 10);
+        double depth = CustomScaler.Scale(screenCoords.x, startingDepthCoord, tunnelGridDepth, 0, chunkSize);
+        double height = CustomScaler.Scale(screenCoords.y, startingHeightCoord, tunnelGridHeight, Camera.main.fieldOfView / 10, -Camera.main.fieldOfView / 10);
         return convertedObstacleCoords = new Vector3(0, (float)height, (float)depth);
     }
     #endregion
