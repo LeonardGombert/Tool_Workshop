@@ -13,7 +13,7 @@ public class LevelTrackEditorWIndow : EditorWindow
     Vector2 screenSize;
 
     // grid paramaters
-    int gridHeight = 6;
+    int gridHeight = 20;
     int rectSize = 20;
 
     enum Brush
@@ -57,7 +57,7 @@ public class LevelTrackEditorWIndow : EditorWindow
         // draw a grid of screen size length and game screen size height
         for (int i = 1, x = startingWidth; x < screenSize.x; x += rectSize + 2)
         {
-            for (int y = startingHeight; y < startingHeight + rectSize * gridHeight; y += rectSize + 2, i++)
+            for (int y = startingHeight; y < startingHeight + (rectSize+2)* gridHeight; y += rectSize+2, i++)
             {
                 Rect newRect = new Rect(x, y, rectSize, rectSize);
                 newRect.center = new Vector2(x, y);
@@ -67,28 +67,24 @@ public class LevelTrackEditorWIndow : EditorWindow
                 // if the tile to be drawn is in an obstacle, draw it as green
                 else if (obstacleRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.red);
                 // othrewise, draw it as an empty tile
-                else EditorGUI.DrawRect(newRect, Color.black);/*
-                if (playSpaceRectsIndexes.Contains(i)) GUI.Button(newRect, i.ToString());
+                else EditorGUI.DrawRect(newRect, Color.black);
+                /*if (playSpaceRectsIndexes.Contains(i)) GUI.Button(newRect, i.ToString());
                 else if (obstacleRectsIndexes.Contains(i)) GUI.Button(newRect, i.ToString());
-                else GUI.Button(newRect, i.ToString());*/
+                else GUI.Button(newRect, i.ToString()); */
 
-                if(myEnum == Brush.playSpaceTransition)
+                if (myEnum == Brush.playSpaceTransition)
                 {
-                    // if the player is clicking on a tile at the bottom of the screen
-                    if((i % 6) == 0)
+                    // if the player right clicks on an already green tile -> delete
+                    if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && playSpaceRectsIndexes.Contains(i) && cur.button == 1) playSpaceRectsIndexes.Remove(i);
+                    // if the player clicks on a tile that isn't green -> turn it green
+                    else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !playSpaceRectsIndexes.Contains(i))
                     {
-                        // if the player right clicks on an already green tile -> delete
-                        if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && playSpaceRectsIndexes.Contains(i) && cur.button == 1) playSpaceRectsIndexes.Remove(i);
-                        // if the player clicks on a tile that isn't green -> turn it green
-                        else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !playSpaceRectsIndexes.Contains(i))
-                        {
-                            for (int j = i; j >= i - (gridHeight - 1); j--)
-                            {
-                                Debug.Log(j);
-                                Debug.Log(i - gridHeight);
-                                playSpaceRectsIndexes.Add(j);
-                            }
-                        }
+                        // if the player is clicking on a tile at the bottom of the screen
+                        if ((i % gridHeight) == 0) for (int j = i; j >= i - (gridHeight - 1); j--) playSpaceRectsIndexes.Add(j);
+
+                        // else, iterate through the tiles until you find the bottom one, and draw them back to the top
+                        else for (int l = i; l < i + gridHeight; l++) if (l % gridHeight == 0) for (int j = l; j >= l - (gridHeight - 1); j--) playSpaceRectsIndexes.Add(j);
+
                     }
                 }
 
