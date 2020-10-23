@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class LevelTrackEditorWIndow : EditorWindow
+public class LevelTrackEditorWindow : EditorWindow
 {
     // breakable obstacle variables
     List<int> softObstacleRectsIndexes = new List<int>();
@@ -21,6 +21,7 @@ public class LevelTrackEditorWIndow : EditorWindow
     List<GameObject> hardObstaclesList = new List<GameObject>();
     GameObject hardObstaclePrefab;
 
+    // playspace change area variables
     List<int> playSpaceRectsIndexes = new List<int>();
     List<Vector2> playspaceRectCoords = new List<Vector2>();
     List<GameObject> playspaceList = new List<GameObject>();
@@ -44,20 +45,24 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     Brush myBrush;
 
-    List<PlayspaceScriptableObject> playspaceValuesObject = new List<PlayspaceScriptableObject>();
-
     GameObject playspaceChangePrefab;
+
+    PlayspaceScriptableObject[] playspaceValuesObject = new PlayspaceScriptableObject[0];
+    int playspaceValuesArraySize = 0;
+
 
     [MenuItem("Window/Level Track Editor Window %k")]
     public static void InitWithContent()
     {
-        LevelTrackEditorWIndow window = GetWindow<LevelTrackEditorWIndow>();
+        LevelTrackEditorWindow window = GetWindow<LevelTrackEditorWindow>();
         window.Show();
     }
 
     private void OnGUI()
     {
+        // determine the number of columns
         tunnelColumns = (int)Camera.main.fieldOfView / 10;
+        // make it an uneven number (to center on the player's starting position)
         if (tunnelColumns % 2 == 0) tunnelColumns++;
         Event cur = Event.current;
 
@@ -69,48 +74,55 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region PropertyFields GUI
-        softObstaclePrefab = EditorGUILayout.ObjectField("Unbreakable Obstacle", softObstaclePrefab, typeof(GameObject), true) as GameObject;
-        hardObstaclePrefab = EditorGUILayout.ObjectField("Breakable Obstacle", hardObstaclePrefab, typeof(GameObject), true) as GameObject;
-        playspaceChangePrefab = EditorGUILayout.ObjectField("Playspace Change", playspaceChangePrefab, typeof(GameObject), true) as GameObject;
+        softObstaclePrefab = EditorGUILayout.ObjectField(new GUIContent("Breakable Obstacle", default, "This type of object can be destroyed by the player"), softObstaclePrefab, typeof(GameObject), true) as GameObject;
+        hardObstaclePrefab = EditorGUILayout.ObjectField(new GUIContent("Unbreakable Obstacle", default, "This type of object cannot be destroyed by the player"), hardObstaclePrefab, typeof(GameObject), true) as GameObject;
+        playspaceChangePrefab = EditorGUILayout.ObjectField(new GUIContent("Playspace Change", default, "This type of object determines where the player's playspace will change"), playspaceChangePrefab, typeof(GameObject), true) as GameObject;
         #endregion
 
-        #region Draw All Obstacles in Scene GUI
+        #region Button & Label GUI
         // Create a button that allows you to spawn the cubes in the world
-        if (GUILayout.Button("Place Cubes"))
+        if (GUILayout.Button(new GUIContent("Place Cubes", default,  "Generate the Level you've just built in the scene")))
         {
-            // spawn all breakable obstacles and add them to the list
-            foreach (Vector2 item in softObstacleRectCoords)
-            {
-                Vector3 convertedCoords = ScaleToWorldSpace(item);
-                GameObject newObstacle =
-                    Instantiate(softObstaclePrefab,
-                    convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
-                softObstaclesList.Add(newObstacle);
-            }
+            if (softObstaclePrefab == null || hardObstaclePrefab == null || playspaceChangePrefab == null) 
+                EditorUtility.DisplayDialog("Creation Error", "You seem to be missing some prefabs. Try assigning them before attempting to generate the level.", "Ok");
 
-            // spawn all unbreakable obstacles and add them to the list
-            foreach (Vector2 item in hardObstacleRectCoords)
+            else
             {
-                Vector3 convertedCoords = ScaleToWorldSpace(item);
-                GameObject newObstacle =
-                    Instantiate(hardObstaclePrefab,
-                    convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
-                hardObstaclesList.Add(newObstacle);
-            }
 
-            // spawn all playspace changes and add them to the list
-            foreach (Vector2 item in playspaceRectCoords)
-            {
-                Vector3 convertedCoords = ScaleToWorldSpace(item);
-                GameObject newPlaySpaceChange =
-                    Instantiate(playspaceChangePrefab,
-                    convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
-                playspaceList.Add(newPlaySpaceChange);
+                // spawn all breakable obstacles and add them to the list
+                foreach (Vector2 item in softObstacleRectCoords)
+                {
+                    Vector3 convertedCoords = ScaleToWorldSpace(item);
+                    GameObject newObstacle =
+                        Instantiate(softObstaclePrefab,
+                        convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
+                    softObstaclesList.Add(newObstacle);
+                }
+
+                // spawn all unbreakable obstacles and add them to the list
+                foreach (Vector2 item in hardObstacleRectCoords)
+                {
+                    Vector3 convertedCoords = ScaleToWorldSpace(item);
+                    GameObject newObstacle =
+                        Instantiate(hardObstaclePrefab,
+                        convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
+                    hardObstaclesList.Add(newObstacle);
+                }
+
+                // spawn all playspace changes and add them to the list
+                foreach (Vector2 item in playspaceRectCoords)
+                {
+                    Vector3 convertedCoords = ScaleToWorldSpace(item);
+                    GameObject newPlaySpaceChange =
+                        Instantiate(playspaceChangePrefab,
+                        convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
+                    playspaceList.Add(newPlaySpaceChange);
+                }
             }
         }
 
         // Create a button that allows you to delete the spawned cubes
-        if (GUILayout.Button("Delete Cubes"))
+        if (GUILayout.Button(new GUIContent("Delete Cubes", default, "Delete any objects you've previously generated into the scene")))
         {
             foreach (GameObject obstacle in softObstaclesList) DestroyImmediate(obstacle, false);
             foreach (GameObject obstacle in hardObstaclesList) DestroyImmediate(obstacle, false);
@@ -119,7 +131,7 @@ public class LevelTrackEditorWIndow : EditorWindow
         EditorGUILayout.EndHorizontal();
 
 
-        if(GUILayout.Button("Save Level Track"))
+        if (GUILayout.Button(new GUIContent("Save This Track", default, "Save the track you've been working on as a ScriptableObject")))
         {
             LevelTrack levelTrack = new LevelTrack();
             levelTrack.softObstacleRectCoords = softObstacleRectCoords;
@@ -174,7 +186,10 @@ public class LevelTrackEditorWIndow : EditorWindow
                         if ((i % tunnelColumns) == 0)
                         {
                             playspaceRectCoords.Add(new Vector2(z, y));
-                            playspaceValuesObject.Add(null);
+                            
+                            playspaceValuesArraySize++;
+                            playspaceValuesObject = new PlayspaceScriptableObject[playspaceValuesArraySize];
+
                             for (int j = i; j >= i - (tunnelColumns - 1); j--)
                                 playSpaceRectsIndexes.Add(j);
                         }
@@ -186,7 +201,10 @@ public class LevelTrackEditorWIndow : EditorWindow
                                 if (l % tunnelColumns == 0)
                                 {
                                     playspaceRectCoords.Add(new Vector2(z, y));
-                                    playspaceValuesObject.Add(null);
+
+                                    playspaceValuesArraySize++;
+                                    playspaceValuesObject = new PlayspaceScriptableObject[playspaceValuesArraySize];
+
                                     for (int j = l; j >= l - (tunnelColumns - 1); j--)
                                         playSpaceRectsIndexes.Add(j);
                                 }
@@ -194,7 +212,7 @@ public class LevelTrackEditorWIndow : EditorWindow
                 }
 
                 // if the player right clicks on an already green tile -> delete
-                if (myBrush == Brush.unbreakableObstacle)
+                if (myBrush == Brush.breakableObstacle)
                 {
                     if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && softObstacleRectsIndexes.Contains(i) && cur.button == 1)
                     {
@@ -211,7 +229,7 @@ public class LevelTrackEditorWIndow : EditorWindow
                 }
 
                 // if the player right clicks on an already green tile -> delete
-                if (myBrush == Brush.breakableObstacle)
+                if (myBrush == Brush.unbreakableObstacle)
                 {
                     if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && hardObstacleRectsIndexes.Contains(i) && cur.button == 1)
                     {
@@ -231,9 +249,17 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region Add Playspace Data property field
-        /*for (int i = 0; i <= playspaceRectCoords.Count; i++)
+        /*foreach (var item in playspaceRectCoords)
         {
-            if(playspaceRectCoords.Count != 0)
+            Rect propertyRect = new Rect(0, 0, 100, 50);
+            propertyRect.center = new Vector2(item.x, item.y + 45);
+
+            playspaceValuesObject = (PlayspaceScriptableObject)EditorGUI.ObjectField(propertyRect, playspaceValuesObject, typeof(PlayspaceScriptableObject), true);
+        }*/
+
+        for (int i = 0; i < playspaceRectCoords.Count; i++)
+        {
+            if (playspaceRectCoords.Count > 0)
             {
                 Rect propertyRect = new Rect(0, 0, 100, 50);
                 propertyRect.center = new Vector2(playspaceRectCoords[i].x, playspaceRectCoords[i].y + 45);
@@ -241,15 +267,16 @@ public class LevelTrackEditorWIndow : EditorWindow
 
                 if (playspaceValuesObject[i] != null)
                 {
+                    /*
                     PlayspaceValue newObj = new PlayspaceValue();
                     newObj.playspaceTunnelCoords = playspaceRectCoords[i];
                     newObj.playspaceWidth = playspaceValuesObject[i].playspaceWidth;
                     newObj.playspaceHeight = playspaceValuesObject[i].playspaceHeight;
-                    if (!playspaceValues.Contains(newObj)) playspaceValues.Add(newObj);
+                    if (!playspaceValues.Contains(newObj)) playspaceValues.Add(newObj);*/
                 }
             }
         }
-        //playspaceValuesObject.Clear();*/
+        //playspaceValuesObject.Clear();
         #endregion
 
         Repaint();

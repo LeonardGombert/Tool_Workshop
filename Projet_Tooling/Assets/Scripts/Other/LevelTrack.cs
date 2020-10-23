@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class LevelTrack
+[CreateAssetMenu(fileName = "PlayspaceData", menuName = "ScriptableObjects/PlayspaceScriptableObject", order = 2)]
+public class LevelTrack : ScriptableObject
 {
     public List<Vector2> softObstacleRectCoords = new List<Vector2>();
     public List<Vector2> hardObstacleRectCoords = new List<Vector2>();
