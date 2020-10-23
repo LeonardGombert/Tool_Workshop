@@ -36,26 +36,26 @@ namespace Gameplay.Player
                 //prepare for some YandereDev-style if else loops, bruh
 
                 // DIAGONAL MOVEMENT
-                if (currentPos.x < playSpace.leftX && currentPos.y > playSpace.rightY || currentPos.x > playSpace.rightX && currentPos.y < playSpace.leftY)
+                if (currentPos.x < playspace.leftX && currentPos.y > playspace.rightY || currentPos.x > playspace.rightX && currentPos.y < playspace.leftY)
                 {
-                    if (currentPos.x < playSpace.leftX && currentPos.y > playSpace.rightY)
+                    if (currentPos.x < playspace.leftX && currentPos.y > playspace.rightY)
                         transform.position = new Vector3(transform.position.x + transitionSpeed * Time.deltaTime, transform.position.y - transitionSpeed * Time.deltaTime, transform.position.z);
-                    if (currentPos.x > playSpace.rightX && currentPos.y < playSpace.leftY)
+                    if (currentPos.x > playspace.rightX && currentPos.y < playspace.leftY)
                         transform.position = new Vector3(transform.position.x - transitionSpeed * Time.deltaTime, transform.position.y + transitionSpeed * Time.deltaTime, transform.position.z);
                 }
 
                 // CARDINAL MOVEMENT
                 else
                 {
-                    if (currentPos.x < playSpace.leftX) transform.position = new Vector3(transform.position.x + transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
-                    else if (currentPos.x > playSpace.rightX) transform.position = new Vector3(transform.position.x - transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
-                    if (currentPos.y < playSpace.leftY) transform.position = new Vector3(transform.position.x, transform.position.y + transitionSpeed * Time.deltaTime, transform.position.z);
-                    else if (currentPos.y > playSpace.rightY) transform.position = new Vector3(transform.position.x, transform.position.y - transitionSpeed * Time.deltaTime, transform.position.z);
+                    if (currentPos.x < playspace.leftX) transform.position = new Vector3(transform.position.x + transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
+                    else if (currentPos.x > playspace.rightX) transform.position = new Vector3(transform.position.x - transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
+                    if (currentPos.y < playspace.leftY) transform.position = new Vector3(transform.position.x, transform.position.y + transitionSpeed * Time.deltaTime, transform.position.z);
+                    else if (currentPos.y > playspace.rightY) transform.position = new Vector3(transform.position.x, transform.position.y - transitionSpeed * Time.deltaTime, transform.position.z);
                 }
 
                 // PLAYSPACE CONSTRAINTS
-                if (targetPos.x > playSpace.leftX && targetPos.y > playSpace.leftY &&
-                    targetPos.x < playSpace.rightX && targetPos.y < playSpace.rightY)
+                if (targetPos.x > playspace.leftX && targetPos.y > playspace.leftY &&
+                    targetPos.x < playspace.rightX && targetPos.y < playspace.rightY)
                     transform.position += movement;
 
                 // update the screenspace position (USED BY EDITOR WINDOW)

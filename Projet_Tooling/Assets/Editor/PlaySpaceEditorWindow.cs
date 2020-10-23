@@ -82,8 +82,8 @@ public class PlaySpaceEditorWindow : EditorWindow
 
             #region Calculate Virtual Screen Playspace
             // get the player's positions and convert to virtual screen proportions
-            leftPlayerspace = ScaleGameToScreen(new Vector2(movementBehavior.playSpace.leftX, movementBehavior.playSpace.leftY));
-            rightPlayspace = ScaleGameToScreen(new Vector2(movementBehavior.playSpace.rightX, movementBehavior.playSpace.rightY));
+            leftPlayerspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.leftX, movementBehavior.playspace.leftY));
+            rightPlayspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.rightX, movementBehavior.playspace.rightY));
 
             // create the Rects...
             botLeft = new Rect(0, 0, 10, 10);
@@ -151,10 +151,10 @@ public class PlaySpaceEditorWindow : EditorWindow
 
             // convert the virtual screen values to Game Screen Values
             appliedBounds = ScaleScreenToGame(calcBounds);
-            movementBehavior.playSpace.leftX = appliedBounds.leftX;
-            movementBehavior.playSpace.leftY = appliedBounds.leftY;
-            movementBehavior.playSpace.rightX = appliedBounds.rightX;
-            movementBehavior.playSpace.rightY = appliedBounds.rightY;
+            movementBehavior.playspace.leftX = appliedBounds.leftX;
+            movementBehavior.playspace.leftY = appliedBounds.leftY;
+            movementBehavior.playspace.rightX = appliedBounds.rightX;
+            movementBehavior.playspace.rightY = appliedBounds.rightY;
             #endregion
         }
         Repaint();

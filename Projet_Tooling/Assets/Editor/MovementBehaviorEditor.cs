@@ -16,24 +16,25 @@ public class MovementBehaviorEditor : Editor
     {
         movementBehavior = target as MovementBehavior;
         playerSpeed = serializedObject.FindProperty(nameof(movementBehavior.movementSpeed));
-        vectorBounds = serializedObject.FindProperty(nameof(movementBehavior.playSpace));
+        vectorBounds = serializedObject.FindProperty(nameof(movementBehavior.playspace));
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+
         EditorGUILayout.BeginVertical();
 
         EditorGUILayout.PropertyField(playerSpeed);
 
         foldoutState = EditorGUILayout.Foldout(foldoutState, "Vector4 Bounds", true);
+        if (foldoutState) EditorGUILayout.PropertyField(vectorBounds);
 
-        if(foldoutState)EditorGUILayout.PropertyField(vectorBounds);
-
-        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
+        if (GUILayout.Button("Open Playspace Editor"))
+            PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
 
         EditorGUILayout.EndVertical();
-        serializedObject.ApplyModifiedProperties();
 
+        serializedObject.ApplyModifiedProperties();
     }
 }
