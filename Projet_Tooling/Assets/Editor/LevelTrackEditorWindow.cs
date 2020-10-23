@@ -230,7 +230,8 @@ public class LevelTrackEditorWIndow : EditorWindow
         }
         #endregion
 
-        for (int i = 0; i <= playspaceRectCoords.Count; i++)
+        #region Add Playspace Data property field
+        /*for (int i = 0; i <= playspaceRectCoords.Count; i++)
         {
             if(playspaceRectCoords.Count != 0)
             {
@@ -248,7 +249,8 @@ public class LevelTrackEditorWIndow : EditorWindow
                 }
             }
         }
-        //playspaceValuesObject.Clear();
+        //playspaceValuesObject.Clear();*/
+        #endregion
 
         Repaint();
     }

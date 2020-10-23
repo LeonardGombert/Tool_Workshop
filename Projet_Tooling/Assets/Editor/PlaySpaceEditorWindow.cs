@@ -7,6 +7,7 @@ public class PlaySpaceEditorWindow : EditorWindow
 {
     MovementBehavior movementBehavior;
     Vector4Bounds windowSize;
+    Vector4Bounds appliedBounds;
 
     Rect screenSpace, playerRect;
     Rect botLeft, topRight, topLeft, botRight;
@@ -41,6 +42,16 @@ public class PlaySpaceEditorWindow : EditorWindow
 
     private void OnGUI()
     {
+        if (GUILayout.Button("Save this preset"))
+        {
+            PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
+            newSaveData.playspaceBounds = appliedBounds;
+            AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
+            EditorUtility.SetDirty(newSaveData);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
         if (movementBehavior != null)
         {
             #region Create Virtual Screen from Player Window
@@ -113,7 +124,7 @@ public class PlaySpaceEditorWindow : EditorWindow
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Playspace Height");
-            yScale = EditorGUILayout.Slider(yScale, 0, Camera.main.pixelHeight/2);
+            yScale = EditorGUILayout.Slider(yScale, 0, Camera.main.pixelHeight / 2);
             EditorGUILayout.EndHorizontal();
 
             botLeft.center = ScaleGameToScreen(new Vector2(xScale, yScale));
@@ -139,16 +150,13 @@ public class PlaySpaceEditorWindow : EditorWindow
             calcBounds.rightY = topRight.center.y;
 
             // convert the virtual screen values to Game Screen Values
-            Vector4Bounds appliedBounds = ScaleScreenToGame(calcBounds);
+            appliedBounds = ScaleScreenToGame(calcBounds);
             movementBehavior.playSpace.leftX = appliedBounds.leftX;
             movementBehavior.playSpace.leftY = appliedBounds.leftY;
             movementBehavior.playSpace.rightX = appliedBounds.rightX;
             movementBehavior.playSpace.rightY = appliedBounds.rightY;
             #endregion
         }
-
-
-
         Repaint();
     }
 
