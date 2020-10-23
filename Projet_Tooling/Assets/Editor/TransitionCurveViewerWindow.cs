@@ -8,18 +8,19 @@ public class TransitionCurveViewerWindow : EditorWindow
     Vector2 change;
     Vector2 startValue = new Vector2(0, 0);
     Vector2 targetValue = new Vector2(150, 150);
-    float tweenDuration = 50f;
+    float tweenDuration = 200f;
 
     List<Rect> myRects = new List<Rect>();
+    List<Vector2> myRectPositions = new List<Vector2>();
 
     Rect linearRect = new Rect(0, 0, 10, 10);
-    Rect easeInRect = new Rect(200, 0, 10, 10);
-    Rect easeInQuad = new Rect(400, 0, 10, 10);
-    Rect EaseInOutQuad = new Rect(600, 0, 10, 10);
-    Rect easeInOutQuint = new Rect(800, 0, 10, 10);
-    Rect easeInOutSine = new Rect(1000, 0, 10, 10);
+    Rect easeInRect = new Rect(250, 0, 10, 10);
+    Rect easeInQuad = new Rect(500, 0, 10, 10);
+    Rect EaseInOutQuad = new Rect(750, 0, 10, 10);
+    Rect easeInOutQuint = new Rect(1000, 0, 10, 10);
+    Rect easeInOutSine = new Rect(1250, 0, 10, 10);
 
-    TweenManager.TweenFunction tweenFunction = default;
+    TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
 
     [MenuItem("Window/Curve Animation Window")]
     public static void Init()
@@ -42,20 +43,28 @@ public class TransitionCurveViewerWindow : EditorWindow
     {
         time += Time.deltaTime;
 
+        #region Draw the Rects moving over time
         for (int i = 0; i < myRects.Count; i++)
         {
-            EditorGUI.DrawRect(new Rect(myRects[i].position.x, myRects[i].position.y, 155, 155), Color.black);
-            startValue = myRects[i].position;
-            targetValue = myRects[i].position + new Vector2(150, 150);
+            EditorGUI.DrawRect(new Rect(myRects[i].position.x, myRects[i].position.y, 205, 205), Color.black);
             Rect currentRect = new Rect(Vector2.zero, new Vector2(10, 10));
+
+            startValue = myRects[i].position;
+            targetValue = myRects[i].position + new Vector2(200, 200);
+
             currentRect.center = MoveValue(myRects[i].position, TweenManager.tweenFunctions[i]);
             EditorGUI.DrawRect(currentRect, Color.green);
+            myRectPositions.Add(currentRect.center);
         }
+        #endregion
+
+        foreach (Vector2 position in myRectPositions) EditorGUI.DrawRect(new Rect(position, new Vector2(2, 2)), Color.green);
 
         Repaint();
     }
 
-    //example function
+    #region Tween Move Function
+    // Move the rect along the curve
     Vector2 MoveValue(Vector2 exampleValue, TweenManager.TweenFunction type)
     {
         Vector2 returnVector = new Vector2();
@@ -70,9 +79,9 @@ public class TransitionCurveViewerWindow : EditorWindow
 
         else
         {
-            linearRect.position = new Vector2(0, 0);
             time = 0f;
             return targetValue;
         }
     }
+    #endregion
 }
