@@ -8,13 +8,12 @@ namespace Gameplay.Player
         [HideInInspector] public Vector3 screenSpacePosition;
         [HideInInspector] public float movementSpeed = 22f;
         [HideInInspector] public float vignetteSetting;
+        public bool rescaled;
 
         // playspace change transition values
         protected float time;
-        protected float change;
-        protected float startValue;
-        protected float targetValue;
-        [HideInInspector] public float tweenDuration;
+        protected float changeLX, changeLY, changeRX, changeRY;
+        [HideInInspector] public float tweenDuration = 3f;
 
         [HideInInspector] public float transitionSpeed = 2;
 

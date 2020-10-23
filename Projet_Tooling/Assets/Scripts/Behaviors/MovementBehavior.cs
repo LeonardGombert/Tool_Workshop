@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.InputSystem;
 
 namespace Gameplay.Player
@@ -17,6 +19,35 @@ namespace Gameplay.Player
             movementAcion = inputMapping.Player.Move;
             movementAcion.performed += ctx => moveDirection = ctx.ReadValue<Vector2>();
             movementAcion.canceled += ctx => moveDirection = Vector3.zero;
+        }
+
+        // called on collision with a playspace change object
+        public IEnumerator ChangePlayspace(Vector4Bounds newCoords, int tweenIndex)
+        {
+            Debug.Log("In the coroutine");
+            Vector4Bounds oldValues = playspace;
+
+            // target - start values
+            changeLX = newCoords.leftX - oldValues.leftX;
+            changeLY = newCoords.leftY - oldValues.leftY;
+            changeRX = newCoords.rightX - oldValues.rightX;
+            changeRY = newCoords.rightY - oldValues.rightY;
+            time = 0f;
+            tweenDuration = 1.5f;
+
+            while (time < tweenDuration)
+            {
+                Debug.Log("Changing values");
+                playspace.leftX = TweenManager.tweenFunctions[tweenIndex](time, oldValues.leftX, changeLX, tweenDuration);
+                playspace.leftY = TweenManager.tweenFunctions[tweenIndex](time, oldValues.leftY, changeLY, tweenDuration);
+                playspace.rightX = TweenManager.tweenFunctions[tweenIndex](time, oldValues.rightX, changeRX, tweenDuration);
+                playspace.rightY = TweenManager.tweenFunctions[tweenIndex](time, oldValues.rightY, changeRY, tweenDuration);
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            rescaled = true;
+            Debug.Log("I'm out");
         }
 
         void Start()

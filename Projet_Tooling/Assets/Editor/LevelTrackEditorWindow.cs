@@ -50,6 +50,7 @@ public class LevelTrackEditorWindow : EditorWindow
     PlayspaceScriptableObject[] playspaceValuesObject = new PlayspaceScriptableObject[0];
     int playspaceValuesArraySize = 0;
 
+    int playSpaceChangesIndex = 0;
 
     [MenuItem("Window/Level Track Editor Window %k")]
     public static void InitWithContent()
@@ -118,9 +119,13 @@ public class LevelTrackEditorWindow : EditorWindow
                         Instantiate(playspaceChangePrefab,
                         convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
                     playspaceList.Add(newPlaySpaceChange);
+
+                    newPlaySpaceChange.GetComponent<PlayspaceChangeBehavior>().myValues = playspaceValuesObject[playSpaceChangesIndex];
+                    playSpaceChangesIndex++;
                 }
             }
         }
+        playSpaceChangesIndex = 0;
 
         // Create a button that allows you to delete the spawned cubes
         if (GUILayout.Button(new GUIContent("Delete Cubes", default, "Delete any objects you've previously generated into the scene")))

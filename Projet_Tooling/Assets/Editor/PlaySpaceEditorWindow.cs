@@ -1,5 +1,4 @@
 ﻿using Gameplay.Player;
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
@@ -79,6 +78,21 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         if (movementBehavior != null)
         {
+            if (movementBehavior.rescaled)
+            {
+                // get the player's positions and convert to virtual screen proportions
+                leftPlayerspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.leftX, movementBehavior.playspace.leftY));
+                rightPlayspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.rightX, movementBehavior.playspace.rightY));
+
+                // ... and center them on the position of playSpace extremities
+                botLeft.center = new Vector2(leftPlayerspace.x, leftPlayerspace.y);
+                topRight.center = new Vector2(rightPlayspace.x, rightPlayspace.y);
+                topLeft.center = new Vector2(leftPlayerspace.x, rightPlayspace.y);
+                botRight.center = new Vector2(rightPlayspace.x, leftPlayerspace.y);
+
+                movementBehavior.rescaled = false;
+            }
+
             #region Create Virtual Screen from Player Window
             // create the virtual screen and position it
             screenSize = new Rect(0, 0, Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
@@ -184,23 +198,19 @@ public class PlaySpaceEditorWindow : EditorWindow
             #endregion
 
             #region Change Rect Size with a slider
-            // if you aren't currently visualizing translations
-            if (transitionWindow == null)
-            {
-                // create two label fields
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Playspace Width");
-                xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, Camera.main.pixelWidth / 2);
-                EditorGUILayout.EndHorizontal();
+            // create two label fields
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Playspace Width");
+            xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, screenSize.x);
+            EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Playspace Height");
-                ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, Camera.main.pixelHeight / 2);
-                EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Playspace Height");
+            ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, screenSize.y);
+            EditorGUILayout.EndHorizontal();
 
-                botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));
-                topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xSliderScale, Camera.main.pixelHeight - ySliderScale));
-            }
+            botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));
+            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xSliderScale, Camera.main.pixelHeight - ySliderScale));
 
             //UNDO SLIDER
             /*EditorGUI.BeginChangeCheck();
@@ -235,7 +245,7 @@ public class PlaySpaceEditorWindow : EditorWindow
                 postProcVolume.profile.TryGetSettings(out vignette);
             }
 
-            else vignette.intensity.value = (float)CustomScaler.Scale(xSliderScale, 0, Camera.main.pixelWidth / 2, 0, 1);
+            //else vignette.intensity.value = (float)CustomScaler.Scale(xSliderScale, 0, Camera.main.pixelWidth / 2, 0, 1);
             #endregion
 
             #region Export the Playspace as a new Preset
@@ -243,7 +253,7 @@ public class PlaySpaceEditorWindow : EditorWindow
             {
                 PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
                 newSaveData.playspaceBounds = convertedBounds;
-                newSaveData.tweenTransition = TweenManager.tweenFunctions[(int)selectedTween];
+                newSaveData.backupTweenTransitionInt = (int)selectedTween;
                 AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
                 EditorUtility.SetDirty(newSaveData);
                 AssetDatabase.SaveAssets();
