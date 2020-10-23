@@ -7,6 +7,7 @@ namespace Gameplay.Player
         [HideInInspector] public Vector3 moveDirection;
         [HideInInspector] public Vector3 screenSpacePosition;
         [HideInInspector] public float movementSpeed = 22f;
+        [HideInInspector] public float vignetteSetting;
 
         // playspace change transition values
         protected float time;

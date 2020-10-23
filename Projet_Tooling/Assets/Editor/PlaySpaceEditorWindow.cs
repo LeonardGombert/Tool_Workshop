@@ -2,12 +2,13 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class PlaySpaceEditorWindow : EditorWindow
 {
     MovementBehavior movementBehavior;
     Vector4Bounds windowSize;
-    Vector4Bounds appliedBounds;
+    Vector4Bounds convertedBounds;
 
     Rect screenSize, playerRect;
     Rect botLeft, topRight, topLeft, botRight;
@@ -20,15 +21,17 @@ public class PlaySpaceEditorWindow : EditorWindow
     TransitionCurveViewerWindow transitionWindow;
     TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
     TweenName selectedTween;
-    
+
     float time;
-    
     Vector2 changeBotLeftX, changeTopLeftY, changeBotRightX, changeTopRightY;
     Vector2 startValueLeftX, startValueLeftY, startValueRightX, startValueRightY;
-
     float tweenDuration = 200f;
 
-    float positionOfBottoms;
+    // use for virtual screen pos
+    float positionOfBottomRect;
+
+    private Vignette vignette;
+    [SerializeField] PostProcessVolume postProcVolume;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -50,7 +53,7 @@ public class PlaySpaceEditorWindow : EditorWindow
         window.transitionWindow = transitionWindow;
         window.tweenFunction = myTweenFunction;
         window.selectedTween = (TweenName)tweenIndex;
-        
+
         window.startValueLeftX = window.botLeft.position;
         window.startValueLeftY = window.topLeft.position;
         window.startValueRightX = window.botRight.position;
@@ -79,7 +82,7 @@ public class PlaySpaceEditorWindow : EditorWindow
             #region Create Virtual Screen from Player Window
             // create the virtual screen and position it
             screenSize = new Rect(0, 0, Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
-            screenSize.center = new Vector2(position.width / 2, (position.height + positionOfBottoms) / 2);
+            screenSize.center = new Vector2(position.width / 2, (position.height + positionOfBottomRect) / 2);
 
             // define the virtual screen's bounds
             windowSize.leftX = screenSize.center.x - screenSize.width / 2;
@@ -212,25 +215,33 @@ public class PlaySpaceEditorWindow : EditorWindow
 
             #region LAST STEP : Apply Any Changes in Editor Window to Player Values
             // assign the virtual screen values to a new Vector4    
-            Vector4Bounds calcBounds = new Vector4Bounds();
-            calcBounds.leftX = botLeft.center.x; //coords in pixels
-            calcBounds.leftY = botLeft.center.y;
-            calcBounds.rightX = topRight.center.x;
-            calcBounds.rightY = topRight.center.y;
+            Vector4Bounds tempBounds = new Vector4Bounds();
+            tempBounds.leftX = botLeft.center.x; //coords in pixels
+            tempBounds.leftY = botLeft.center.y;
+            tempBounds.rightX = topRight.center.x;
+            tempBounds.rightY = topRight.center.y;
 
             // convert the virtual screen values to Game Screen Values
-            appliedBounds = ScaleScreenToGame(calcBounds);
-            movementBehavior.playspace.leftX = appliedBounds.leftX;
-            movementBehavior.playspace.leftY = appliedBounds.leftY;
-            movementBehavior.playspace.rightX = appliedBounds.rightX;
-            movementBehavior.playspace.rightY = appliedBounds.rightY;
+            convertedBounds = ScaleScreenToGame(tempBounds);
+            movementBehavior.playspace.leftX = convertedBounds.leftX;
+            movementBehavior.playspace.leftY = convertedBounds.leftY;
+            movementBehavior.playspace.rightX = convertedBounds.rightX;
+            movementBehavior.playspace.rightY = convertedBounds.rightY;
+
+            // apply the post-processing effect
+            if (postProcVolume == null) postProcVolume = Camera.main.GetComponent<PostProcessVolume>();
+            else
+            {
+                postProcVolume.profile.TryGetSettings(out vignette);
+                vignette.intensity.value = (float)CustomScaler.Scale(xSliderScale, 0, Camera.main.pixelWidth / 2, 0, 1);
+            }
             #endregion
 
             #region Export the Playspace as a new Preset
             if (GUILayout.Button(new GUIContent("Save this preset", "Export these Playspace settings into a ScriptableObject format")))
             {
                 PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
-                newSaveData.playspaceBounds = appliedBounds;
+                newSaveData.playspaceBounds = convertedBounds;
                 newSaveData.tweenTransition = TweenManager.tweenFunctions[(int)selectedTween];
                 AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
                 EditorUtility.SetDirty(newSaveData);
@@ -241,14 +252,14 @@ public class PlaySpaceEditorWindow : EditorWindow
             EditorGUILayout.BeginHorizontal();
             // Draw a dropdown menu of transitions that the user can select from
             selectedTween = (TweenName)EditorGUILayout.EnumPopup(selectedTween);
-            
+
             // Draw the "Open Visualizer" button on the same line
-            if (GUILayout.Button(new GUIContent("Open Transition Visualizer", "Open a window to visualise ohw the different transitions behave"))) 
+            if (GUILayout.Button(new GUIContent("Open Transition Visualizer", "Open a window to visualise ohw the different transitions behave")))
                 TransitionCurveViewerWindow.Init();
             EditorGUILayout.EndHorizontal();
 
             if (GUILayoutUtility.GetLastRect().position.y > 0)
-                positionOfBottoms = GUILayoutUtility.GetLastRect().position.y;
+                positionOfBottomRect = GUILayoutUtility.GetLastRect().position.y;
             #endregion
         }
 

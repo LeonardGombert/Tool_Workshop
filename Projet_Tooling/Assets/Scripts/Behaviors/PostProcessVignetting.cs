@@ -7,8 +7,8 @@ using UnityEngine.Rendering.PostProcessing;
 public class PostProcessVignetting : MonoBehaviour
 {
     private Vignette vignette;
-    [SerializeField] MovementBehavior player;
     [SerializeField] PostProcessVolume postProcVolume;
+    [SerializeField] MovementBehavior player;
 
     // Start is called before the first frame update
     void Awake()
@@ -19,6 +19,6 @@ public class PostProcessVignetting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CustomScaler.Scale(vignette.intensity, player.playspace.leftX, 0, 0, 1);
+        vignette.intensity.value = player.vignetteSetting;
     }
 }
