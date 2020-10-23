@@ -229,12 +229,13 @@ public class PlaySpaceEditorWindow : EditorWindow
             movementBehavior.playspace.rightY = convertedBounds.rightY;
 
             // apply the post-processing effect
-            if (postProcVolume == null) postProcVolume = Camera.main.GetComponent<PostProcessVolume>();
-            else
+            if (postProcVolume == null)
             {
+                postProcVolume = Camera.main.GetComponent<PostProcessVolume>();
                 postProcVolume.profile.TryGetSettings(out vignette);
-                vignette.intensity.value = (float)CustomScaler.Scale(xSliderScale, 0, Camera.main.pixelWidth / 2, 0, 1);
             }
+
+            else vignette.intensity.value = (float)CustomScaler.Scale(xSliderScale, 0, Camera.main.pixelWidth / 2, 0, 1);
             #endregion
 
             #region Export the Playspace as a new Preset
