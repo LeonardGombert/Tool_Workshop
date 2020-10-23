@@ -14,6 +14,7 @@ namespace Gameplay.Player
         protected float startValue;
         protected float targetValue;
         [HideInInspector] public float tweenDuration;
+        [HideInInspector] public float transitionSpeed = 2;
 
         [HideInInspector] public Vector4Bounds playSpace = new Vector4Bounds();
     }

@@ -24,27 +24,6 @@ namespace Gameplay.Player
             StartCoroutine(MoveShip());
         }
 
-        IEnumerator PlayspaceChangeTransition()
-        {
-            Vector3 centerOfScreen = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, transform.position.z);
-
-            transform.position = new Vector3(MoveValue((int)transform.position.x), MoveValue((int)transform.position.y), transform.position.z);
-
-            yield return null;
-        }
-
-        int MoveValue(int exampleValue)
-        {
-            change = targetValue - startValue;
-
-            if (time <= tweenDuration)
-            {
-                time += Time.deltaTime;
-                return exampleValue = (int)TweenManager.LinearTween(time, startValue, change, tweenDuration);
-            }
-            return exampleValue;
-        }
-
         IEnumerator MoveShip()
         {
             while (true)
@@ -54,10 +33,23 @@ namespace Gameplay.Player
                 Vector3 currentPos = Camera.main.WorldToScreenPoint(transform.position);
                 Vector3 targetPos = Camera.main.WorldToScreenPoint(transform.position + movement);
 
-                if (currentPos.x < playSpace.leftX) currentPos.x++;
-                if (currentPos.x > playSpace.rightX) currentPos.x--;
-                if (currentPos.y < playSpace.leftY) currentPos.y++;
-                if (currentPos.y > playSpace.rightY) currentPos.y--;
+                // DIAGONAL MOVEMENT
+                if (currentPos.x < playSpace.leftX && currentPos.y > playSpace.rightY || currentPos.x > playSpace.rightX && currentPos.y < playSpace.leftY)
+                {
+                    if (currentPos.x < playSpace.leftX && currentPos.y > playSpace.rightY)
+                        transform.position = new Vector3(transform.position.x + transitionSpeed * Time.deltaTime, transform.position.y - transitionSpeed * Time.deltaTime, transform.position.z);
+                    if (currentPos.x > playSpace.rightX && currentPos.y < playSpace.leftY)
+                        transform.position = new Vector3(transform.position.x - transitionSpeed * Time.deltaTime, transform.position.y + transitionSpeed * Time.deltaTime, transform.position.z);
+                }
+
+                // DIAGONAL MOVEMENT
+                else
+                {
+                    if (currentPos.x < playSpace.leftX) transform.position = new Vector3(transform.position.x + transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
+                    else if (currentPos.x > playSpace.rightX) transform.position = new Vector3(transform.position.x - transitionSpeed * Time.deltaTime, transform.position.y, transform.position.z);
+                    if (currentPos.y < playSpace.leftY) transform.position = new Vector3(transform.position.x, transform.position.y + transitionSpeed * Time.deltaTime, transform.position.z);
+                    else if (currentPos.y > playSpace.rightY) transform.position = new Vector3(transform.position.x, transform.position.y - transitionSpeed * Time.deltaTime, transform.position.z);
+                }
 
                 if (targetPos.x > playSpace.leftX && targetPos.y > playSpace.leftY &&
                     targetPos.x < playSpace.rightX && targetPos.y < playSpace.rightY)
