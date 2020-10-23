@@ -61,7 +61,7 @@ public class TransitionCurveViewerWindow : EditorWindow
                 {
                     visualizing = true;
                     // send the info to the playspace window
-                    PlaySpaceEditorWindow.InitForVisualization(this, TweenManager.tweenFunctions[i]);
+                    PlaySpaceEditorWindow.InitForVisualization(this, TweenManager.tweenFunctions[i], i);
                 }
             }
             GUI.backgroundColor = oldColor;

@@ -4,4 +4,5 @@
 public class PlayspaceScriptableObject : ScriptableObject
 {
     public Vector4Bounds playspaceBounds;
+    public TweenManager.TweenFunction tweenTransition;
 }

@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38962918283b2d14e89c0e37a98a5f78, type: 3}
-  m_Name: NewData
+  m_Script: {fileID: 11500000, guid: 2092f271a478ed94f8125e85429f6c45, type: 3}
+  m_Name: PlayspaceData
   m_EditorClassIdentifier: 
-  playspaceBounds:
-    leftX: 0
-    leftY: 95.70001
-    rightX: 598
-    rightY: 278.3
+  softObstacleRectCoords: []
+  hardObstacleRectCoords: []
+  playspaceRectCoords: []
+  playspaceValues: []

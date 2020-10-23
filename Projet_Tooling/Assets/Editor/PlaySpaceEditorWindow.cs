@@ -19,6 +19,7 @@ public class PlaySpaceEditorWindow : EditorWindow
 
     TransitionCurveViewerWindow transitionWindow;
     TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
+    TweenName selectedTween;
     
     float time;
     
@@ -41,11 +42,12 @@ public class PlaySpaceEditorWindow : EditorWindow
         window.Show();
     }
 
-    public static void InitForVisualization(TransitionCurveViewerWindow transitionWindow, TweenManager.TweenFunction myTweenFunction)
+    public static void InitForVisualization(TransitionCurveViewerWindow transitionWindow, TweenManager.TweenFunction myTweenFunction, int tweenIndex)
     {
         PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
         window.transitionWindow = transitionWindow;
         window.tweenFunction = myTweenFunction;
+        window.selectedTween = (TweenName)tweenIndex;
         
         window.startValueLeftX = window.botLeft.position;
         window.startValueLeftY = window.topLeft.position;
@@ -227,14 +229,22 @@ public class PlaySpaceEditorWindow : EditorWindow
             {
                 PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
                 newSaveData.playspaceBounds = appliedBounds;
+                newSaveData.tweenTransition = TweenManager.tweenFunctions[(int)selectedTween];
                 AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
                 EditorUtility.SetDirty(newSaveData);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
 
+            EditorGUILayout.BeginHorizontal();
+            // Draw a dropdown menu of transitions that the user can select from
+            selectedTween = (TweenName)EditorGUILayout.EnumPopup(selectedTween);
+            
+            // Draw the "Open Visualizer" button on the same line
             if (GUILayout.Button(new GUIContent("Open Transition Visualizer", "Open a window to visualise ohw the different transitions behave"))) 
                 TransitionCurveViewerWindow.Init();
+
+            EditorGUILayout.EndHorizontal();
             #endregion
         }
 

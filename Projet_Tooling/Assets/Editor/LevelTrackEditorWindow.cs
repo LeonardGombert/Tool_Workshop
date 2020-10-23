@@ -28,7 +28,6 @@ public class LevelTrackEditorWindow : EditorWindow
 
     List<PlayspaceScriptableObject> playspaceValues = new List<PlayspaceScriptableObject>();
 
-
     // grid paramaters
     int tunnelColumns;
     int tunelRows = 50;
@@ -63,6 +62,7 @@ public class LevelTrackEditorWindow : EditorWindow
     {
         // determine the number of columns
         tunnelColumns = (int)Camera.main.fieldOfView / 10;
+
         // make it an uneven number (to center on the player's starting position)
         if (tunnelColumns % 2 == 0) tunnelColumns++;
         Event cur = Event.current;
@@ -131,7 +131,7 @@ public class LevelTrackEditorWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
-
+        // Create a Button that allows you to save the Track as a scriptable object
         if (GUILayout.Button(new GUIContent("Save This Track", default, "Save the track you've been working on as a ScriptableObject")))
         {
             LevelTrack levelTrack = CreateInstance<LevelTrack>();
@@ -252,15 +252,7 @@ public class LevelTrackEditorWindow : EditorWindow
         }
         #endregion
 
-        #region Add Playspace Data property field
-        /*foreach (var item in playspaceRectCoords)
-        {
-            Rect propertyRect = new Rect(0, 0, 100, 50);
-            propertyRect.center = new Vector2(item.x, item.y + 45);
-
-            playspaceValuesObject = (PlayspaceScriptableObject)EditorGUI.ObjectField(propertyRect, playspaceValuesObject, typeof(PlayspaceScriptableObject), true);
-        }*/
-
+        #region Draw Playspace Data property field
         for (int i = 0; i < playspaceRectCoords.Count; i++)
         {
             if (playspaceRectCoords.Count > 0)
@@ -277,7 +269,6 @@ public class LevelTrackEditorWindow : EditorWindow
                 }
             }
         }
-        //playspaceValuesObject.Clear();
         #endregion
 
         Repaint();
