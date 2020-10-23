@@ -9,9 +9,17 @@ using Object = UnityEngine.Object;
 
 public class LevelTrackEditorWIndow : EditorWindow
 {
-    List<int> obstacleRectsIndexes = new List<int>();
-    List<Vector2> obstacleRectCoords = new List<Vector2>();
-    List<GameObject> obstaclesList = new List<GameObject>();
+    // breakable obstacle variables
+    List<int> softObstacleRectsIndexes = new List<int>();
+    List<Vector2> softObstacleRectCoords = new List<Vector2>();
+    List<GameObject> softObstaclesList = new List<GameObject>();
+    GameObject softObstaclePrefab;
+
+    // unbreakable obstacle variables
+    List<int> hardObstacleRectsIndexes = new List<int>();
+    List<Vector2> hardObstacleRectCoords = new List<Vector2>();
+    List<GameObject> hardObstaclesList = new List<GameObject>();
+    GameObject hardObstaclePrefab;
 
     List<int> playSpaceRectsIndexes = new List<int>();
     List<Vector2> playspaceRectCoords = new List<Vector2>();
@@ -38,7 +46,6 @@ public class LevelTrackEditorWIndow : EditorWindow
 
     List<PlayspaceScriptableObject> playspaceValuesObject = new List<PlayspaceScriptableObject>();
 
-    GameObject obstaclePrefab;
     GameObject playspaceChangePrefab;
 
     [MenuItem("Window/Level Track Editor Window %k")]
@@ -62,7 +69,8 @@ public class LevelTrackEditorWIndow : EditorWindow
         #endregion
 
         #region PropertyFields GUI
-        obstaclePrefab = EditorGUILayout.ObjectField("Obstacle", obstaclePrefab, typeof(GameObject), true) as GameObject;
+        softObstaclePrefab = EditorGUILayout.ObjectField("Unbreakable Obstacle", softObstaclePrefab, typeof(GameObject), true) as GameObject;
+        hardObstaclePrefab = EditorGUILayout.ObjectField("Breakable Obstacle", hardObstaclePrefab, typeof(GameObject), true) as GameObject;
         playspaceChangePrefab = EditorGUILayout.ObjectField("Playspace Change", playspaceChangePrefab, typeof(GameObject), true) as GameObject;
         #endregion
 
@@ -70,15 +78,27 @@ public class LevelTrackEditorWIndow : EditorWindow
         // Create a button that allows you to spawn the cubes in the world
         if (GUILayout.Button("Place Cubes"))
         {
-            foreach (Vector2 item in obstacleRectCoords)
+            // spawn all breakable obstacles and add them to the list
+            foreach (Vector2 item in softObstacleRectCoords)
             {
                 Vector3 convertedCoords = ScaleToWorldSpace(item);
                 GameObject newObstacle =
-                    Instantiate(obstaclePrefab,
+                    Instantiate(softObstaclePrefab,
                     convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
-                obstaclesList.Add(newObstacle);
+                softObstaclesList.Add(newObstacle);
             }
 
+            // spawn all unbreakable obstacles and add them to the list
+            foreach (Vector2 item in hardObstacleRectCoords)
+            {
+                Vector3 convertedCoords = ScaleToWorldSpace(item);
+                GameObject newObstacle =
+                    Instantiate(hardObstaclePrefab,
+                    convertedCoords, Quaternion.identity, GameObject.Find("MOVING OBJECTS").transform);
+                hardObstaclesList.Add(newObstacle);
+            }
+
+            // spawn all playspace changes and add them to the list
             foreach (Vector2 item in playspaceRectCoords)
             {
                 Vector3 convertedCoords = ScaleToWorldSpace(item);
@@ -92,10 +112,9 @@ public class LevelTrackEditorWIndow : EditorWindow
         // Create a button that allows you to delete the spawned cubes
         if (GUILayout.Button("Delete Cubes"))
         {
-            foreach (GameObject obstacle in obstaclesList)
-            {
-                DestroyImmediate(obstacle, false);
-            }
+            foreach (GameObject obstacle in softObstaclesList) DestroyImmediate(obstacle, false);
+            foreach (GameObject obstacle in hardObstaclesList) DestroyImmediate(obstacle, false);
+            foreach (GameObject obstacle in playspaceList) DestroyImmediate(obstacle, false);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -103,7 +122,8 @@ public class LevelTrackEditorWIndow : EditorWindow
         if(GUILayout.Button("Save Level Track"))
         {
             LevelTrack levelTrack = new LevelTrack();
-            levelTrack.obstacleRectCoords = obstacleRectCoords;
+            levelTrack.softObstacleRectCoords = softObstacleRectCoords;
+            levelTrack.softObstacleRectCoords = hardObstacleRectCoords;
             levelTrack.playspaceRectCoords = playspaceRectCoords;
             levelTrack.playspaceValues = playspaceValues;
 
@@ -128,8 +148,10 @@ public class LevelTrackEditorWIndow : EditorWindow
 
                 //if the tile to be drawn is a playspace change, draw it as green
                 if (playSpaceRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.green);
-                // if the tile to be drawn is in an obstacle, draw it as green
-                else if (obstacleRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.red);
+                // if the tile to be drawn is in a breakable obstacle, draw it as yellow
+                else if (softObstacleRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.yellow);
+                // if the tile to be drawn is in an unbreakable obstacle, draw it as green
+                else if (hardObstacleRectsIndexes.Contains(i)) EditorGUI.DrawRect(newRect, Color.red);
                 // othrewise, draw it as an empty tile
                 else EditorGUI.DrawRect(newRect, Color.black);
                 /*if (playSpaceRectsIndexes.Contains(i)) GUI.Button(newRect, i.ToString());
@@ -172,19 +194,36 @@ public class LevelTrackEditorWIndow : EditorWindow
                 }
 
                 // if the player right clicks on an already green tile -> delete
-                if (myBrush == Brush.obstacle)
+                if (myBrush == Brush.unbreakableObstacle)
                 {
-                    if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && obstacleRectsIndexes.Contains(i) && cur.button == 1)
+                    if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && softObstacleRectsIndexes.Contains(i) && cur.button == 1)
                     {
-                        obstacleRectsIndexes.Remove(i);
-                        obstacleRectCoords.Remove(new Vector2(z, y));
+                        softObstacleRectsIndexes.Remove(i);
+                        softObstacleRectCoords.Remove(new Vector2(z, y));
                     }
 
                     // if the player clicks on a tile that isn't green -> turn it green
-                    else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !obstacleRectsIndexes.Contains(i))
+                    else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !softObstacleRectsIndexes.Contains(i))
                     {
-                        obstacleRectsIndexes.Add(i);
-                        obstacleRectCoords.Add(new Vector2(z, y));
+                        softObstacleRectsIndexes.Add(i);
+                        softObstacleRectCoords.Add(new Vector2(z, y));
+                    }
+                }
+
+                // if the player right clicks on an already green tile -> delete
+                if (myBrush == Brush.breakableObstacle)
+                {
+                    if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && hardObstacleRectsIndexes.Contains(i) && cur.button == 1)
+                    {
+                        hardObstacleRectsIndexes.Remove(i);
+                        hardObstacleRectCoords.Remove(new Vector2(z, y));
+                    }
+
+                    // if the player clicks on a tile that isn't green -> turn it green
+                    else if (newRect.Contains(cur.mousePosition) && cur.type == EventType.MouseDown && !hardObstacleRectsIndexes.Contains(i))
+                    {
+                        hardObstacleRectsIndexes.Add(i);
+                        hardObstacleRectCoords.Add(new Vector2(z, y));
                     }
                 }
             }

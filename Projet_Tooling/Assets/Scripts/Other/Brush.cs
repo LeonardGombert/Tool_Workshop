@@ -1,5 +1,6 @@
 ﻿public enum Brush
 {
-    obstacle,
+    breakableObstacle,
+    unbreakableObstacle,
     playSpaceTransition,
 }
