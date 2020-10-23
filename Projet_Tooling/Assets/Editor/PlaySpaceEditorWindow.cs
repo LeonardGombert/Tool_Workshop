@@ -123,12 +123,28 @@ public class PlaySpaceEditorWindow : EditorWindow
                 if (time <= tweenDuration)
                 {
                     changeBotLeftX = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftX;
-                    botLeft.x = tweenFunction(time, startValueLeftX.x, changeBotLeftX.x, tweenDuration);
-                    botLeft.y = tweenFunction(time, startValueLeftX.y, changeBotLeftX.y, tweenDuration);
+                    float botLeftX = tweenFunction(time, startValueLeftX.x, changeBotLeftX.x, tweenDuration);
+                    float botLeftY = tweenFunction(time, startValueLeftX.y, changeBotLeftX.y, tweenDuration);
 
-                    changeTopLeftY = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftY;
-                    topLeft.x = tweenFunction(time, startValueLeftY.x, changeTopLeftY.x, tweenDuration);
-                    topLeft.y = tweenFunction(time, startValueLeftY.y, changeTopLeftY.y, tweenDuration);
+                    botLeft.center = new Vector2(botLeftX, botLeftY);
+
+                    changeTopLeftY = new Vector2(windowSize.leftX, windowSize.rightY) - startValueLeftY;
+                    float topLeftX = tweenFunction(time, startValueLeftY.x, changeTopLeftY.x, tweenDuration);
+                    float topLeftY = tweenFunction(time, startValueLeftY.y, changeTopLeftY.y, tweenDuration);
+
+                    topLeft.center = new Vector2(topLeftX, topLeftY);
+
+                    changeBotRightX = new Vector2(windowSize.rightX, windowSize.leftY) - startValueRightX;
+                    float botRightX = tweenFunction(time, startValueRightX.x, changeBotRightX.x, tweenDuration);
+                    float botRightY = tweenFunction(time, startValueRightX.y, changeBotRightX.y, tweenDuration);
+
+                    botRight.center = new Vector2(botRightX, botRightY);
+
+                    changeTopRightY = new Vector2(windowSize.rightX, windowSize.rightY) - startValueRightY;
+                    float topRightX = tweenFunction(time, startValueRightY.x, changeTopRightY.x, tweenDuration);
+                    float topRightY = tweenFunction(time, startValueRightY.y, changeTopRightY.y, tweenDuration);
+
+                    topRight.center = new Vector2(topRightX, topRightY);
                 }
 
                 else time = 0;
