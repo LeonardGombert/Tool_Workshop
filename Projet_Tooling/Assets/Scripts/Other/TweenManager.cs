@@ -7,7 +7,7 @@ public class TweenManager : MonoBehaviour
     #region Tween Manager Delegates stuff
     public delegate float TweenFunction(float time, float beginning, float change, float duration);
 
-    static TweenFunction[] tweenFunctions = { LinearTween, EaseInQuad, EaseOutQuad, EaseInOutQuad, EaseInOutQuint, EaseInOutSine };
+    public static TweenFunction[] tweenFunctions = { LinearTween, EaseInQuad, EaseOutQuad, EaseInOutQuad, EaseInOutQuint, EaseInOutSine };
 
     public static TweenFunction GetTween(int index)
     {
