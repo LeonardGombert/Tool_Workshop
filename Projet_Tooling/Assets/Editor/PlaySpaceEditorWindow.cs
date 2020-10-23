@@ -9,7 +9,7 @@ public class PlaySpaceEditorWindow : EditorWindow
     Vector4Bounds windowSize;
     Vector4Bounds appliedBounds;
 
-    Rect screenSpace, playerRect;
+    Rect screenSize, playerRect;
     Rect botLeft, topRight, topLeft, botRight;
 
     Vector2 leftPlayerspace, rightPlayspace;
@@ -27,6 +27,8 @@ public class PlaySpaceEditorWindow : EditorWindow
     Vector2 startValueLeftX, startValueLeftY, startValueRightX, startValueRightY;
 
     float tweenDuration = 200f;
+
+    float positionOfBottoms;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -76,14 +78,14 @@ public class PlaySpaceEditorWindow : EditorWindow
         {
             #region Create Virtual Screen from Player Window
             // create the virtual screen and position it
-            screenSpace = new Rect(0, 0, Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
-            screenSpace.center = new Vector2(position.width / 2, position.height / 2);
+            screenSize = new Rect(0, 0, Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
+            screenSize.center = new Vector2(position.width / 2, (position.height + positionOfBottoms) / 2);
 
             // define the virtual screen's bounds
-            windowSize.leftX = screenSpace.center.x - screenSpace.width / 2;
-            windowSize.leftY = screenSpace.center.y + screenSpace.height / 2;
-            windowSize.rightX = screenSpace.center.x + screenSpace.width / 2;
-            windowSize.rightY = screenSpace.center.y - screenSpace.height / 2;
+            windowSize.leftX = screenSize.center.x - screenSize.width / 2;
+            windowSize.leftY = screenSize.center.y + screenSize.height / 2;
+            windowSize.rightX = screenSize.center.x + screenSize.width / 2;
+            windowSize.rightY = screenSize.center.y - screenSize.height / 2;
 
             // get the player's screenPosition and convert to the virtual screen proportions
             Vector3 screenPos = Camera.main.WorldToScreenPoint(movementBehavior.screenSpacePosition);
@@ -96,7 +98,7 @@ public class PlaySpaceEditorWindow : EditorWindow
             playerRect.center = new Vector2(scaledPosition.x, scaledPosition.y);
 
             // draw the virtual screen and the player
-            EditorGUI.DrawRect(screenSpace, Color.black);
+            EditorGUI.DrawRect(screenSize, Color.black);
             EditorGUI.DrawRect(playerRect, Color.green);
             #endregion
 
@@ -243,8 +245,10 @@ public class PlaySpaceEditorWindow : EditorWindow
             // Draw the "Open Visualizer" button on the same line
             if (GUILayout.Button(new GUIContent("Open Transition Visualizer", "Open a window to visualise ohw the different transitions behave"))) 
                 TransitionCurveViewerWindow.Init();
-
             EditorGUILayout.EndHorizontal();
+
+            if (GUILayoutUtility.GetLastRect().position.y > 0)
+                positionOfBottoms = GUILayoutUtility.GetLastRect().position.y;
             #endregion
         }
 
