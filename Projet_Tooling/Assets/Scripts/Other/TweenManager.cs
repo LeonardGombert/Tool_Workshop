@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class TweenManager : MonoBehaviour
 {
+    #region Tween Manager Delegates stuff
+    public delegate float TweenFunction(float time, float beginning, float change, float duration);
+
+    static TweenFunction[] tweenFunctions = { LinearTween, EaseInQuad, EaseOutQuad, EaseInOutQuad, EaseInOutQuint, EaseInOutSine };
+
+    public static TweenFunction GetTween(int index)
+    {
+        return tweenFunctions[index];
+    }
+    #endregion
+
     public static float LinearTween(float time, float beginning, float change, float duration)
     {
         return time * change / duration + beginning;
@@ -30,7 +41,7 @@ public class TweenManager : MonoBehaviour
     {
         if ((time /= duration / 2) < 1)
             return change / 2 * Mathf.Pow(time, 5) + beginning;
-        return change / 2 * (Mathf.Pow(time-2, 5) + 2) + beginning;
+        return change / 2 * (Mathf.Pow(time - 2, 5) + 2) + beginning;
     }
     public static float EaseInOutSine(float time, float beginning, float change, float duration)
     {

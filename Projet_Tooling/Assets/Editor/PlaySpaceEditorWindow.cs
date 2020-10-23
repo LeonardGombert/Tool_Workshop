@@ -42,16 +42,6 @@ public class PlaySpaceEditorWindow : EditorWindow
 
     private void OnGUI()
     {
-        if (GUILayout.Button("Save this preset"))
-        {
-            PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
-            newSaveData.playspaceBounds = appliedBounds;
-            AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
-            EditorUtility.SetDirty(newSaveData);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-
         if (movementBehavior != null)
         {
             #region Create Virtual Screen from Player Window
@@ -129,7 +119,6 @@ public class PlaySpaceEditorWindow : EditorWindow
 
             botLeft.center = ScaleGameToScreen(new Vector2(xScale, yScale));
             topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xScale, Camera.main.pixelHeight - yScale));
-
             //UNDO SLIDER
             /*EditorGUI.BeginChangeCheck();
             var myFloatForUndoCheck = scale;
@@ -157,6 +146,19 @@ public class PlaySpaceEditorWindow : EditorWindow
             movementBehavior.playspace.rightY = appliedBounds.rightY;
             #endregion
         }
+
+        #region Export the Playspace as a new Preset
+        if (GUILayout.Button(new GUIContent("Save this preset", "Export these Playspace settings into a ScriptableObject format")))
+        {
+            PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
+            newSaveData.playspaceBounds = appliedBounds;
+            AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
+            EditorUtility.SetDirty(newSaveData);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+        #endregion
+
         Repaint();
     }
 
