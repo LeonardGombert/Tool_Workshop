@@ -26,7 +26,8 @@ public class LevelTrackEditorWindow : EditorWindow
     List<Vector2> playspaceRectCoords = new List<Vector2>();
     List<GameObject> playspaceList = new List<GameObject>();
 
-    List<PlayspaceValue> playspaceValues = new List<PlayspaceValue>();
+    List<PlayspaceScriptableObject> playspaceValues = new List<PlayspaceScriptableObject>();
+
 
     // grid paramaters
     int tunnelColumns;
@@ -81,9 +82,9 @@ public class LevelTrackEditorWindow : EditorWindow
 
         #region Button & Label GUI
         // Create a button that allows you to spawn the cubes in the world
-        if (GUILayout.Button(new GUIContent("Place Cubes", default,  "Generate the Level you've just built in the scene")))
+        if (GUILayout.Button(new GUIContent("Place Cubes", default, "Generate the Level you've just built in the scene")))
         {
-            if (softObstaclePrefab == null || hardObstaclePrefab == null || playspaceChangePrefab == null) 
+            if (softObstaclePrefab == null || hardObstaclePrefab == null || playspaceChangePrefab == null)
                 EditorUtility.DisplayDialog("Creation Error", "You seem to be missing some prefabs. Try assigning them before attempting to generate the level.", "Ok");
 
             else
@@ -133,15 +134,18 @@ public class LevelTrackEditorWindow : EditorWindow
 
         if (GUILayout.Button(new GUIContent("Save This Track", default, "Save the track you've been working on as a ScriptableObject")))
         {
-            LevelTrack levelTrack = new LevelTrack();
+            LevelTrack levelTrack = CreateInstance<LevelTrack>();
             levelTrack.softObstacleRectCoords = softObstacleRectCoords;
             levelTrack.softObstacleRectCoords = hardObstacleRectCoords;
             levelTrack.playspaceRectCoords = playspaceRectCoords;
             levelTrack.playspaceValues = playspaceValues;
 
-            string json = JsonUtility.ToJson(levelTrack);
-            string path = "Assets/LevelTracks/NewLevelTrack.json";
-            File.WriteAllText(path, json);
+            AssetDatabase.CreateAsset(levelTrack, "Assets/Level Tracks/NewTrack.asset");
+            EditorUtility.SetDirty(levelTrack);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            EditorUtility.DisplayDialog("Level Saved !", "You've saved your level ! It can be found in Assets/Level Tracks", "Ok");
         }
         #endregion
 
@@ -186,7 +190,7 @@ public class LevelTrackEditorWindow : EditorWindow
                         if ((i % tunnelColumns) == 0)
                         {
                             playspaceRectCoords.Add(new Vector2(z, y));
-                            
+
                             playspaceValuesArraySize++;
                             playspaceValuesObject = new PlayspaceScriptableObject[playspaceValuesArraySize];
 
@@ -267,12 +271,9 @@ public class LevelTrackEditorWindow : EditorWindow
 
                 if (playspaceValuesObject[i] != null)
                 {
-                    /*
-                    PlayspaceValue newObj = new PlayspaceValue();
-                    newObj.playspaceTunnelCoords = playspaceRectCoords[i];
-                    newObj.playspaceWidth = playspaceValuesObject[i].playspaceWidth;
-                    newObj.playspaceHeight = playspaceValuesObject[i].playspaceHeight;
-                    if (!playspaceValues.Contains(newObj)) playspaceValues.Add(newObj);*/
+                    PlayspaceScriptableObject newObj = new PlayspaceScriptableObject();
+                    newObj.playspaceBounds = playspaceValuesObject[i].playspaceBounds;
+                    if (!playspaceValues.Contains(newObj)) playspaceValues.Add(newObj);
                 }
             }
         }
