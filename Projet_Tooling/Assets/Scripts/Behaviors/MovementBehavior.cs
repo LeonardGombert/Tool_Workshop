@@ -24,6 +24,7 @@ namespace Gameplay.Player
         // called on collision with a playspace change object
         public IEnumerator ChangePlayspace(Vector4Bounds newCoords, int tweenIndex)
         {
+            rescaled = true;
             Debug.Log("In the coroutine");
             Vector4Bounds oldValues = playspace;
 
@@ -46,8 +47,8 @@ namespace Gameplay.Player
                 yield return null;
             }
 
-            rescaled = true;
             Debug.Log("I'm out");
+            rescaled = false;
         }
 
         void Start()

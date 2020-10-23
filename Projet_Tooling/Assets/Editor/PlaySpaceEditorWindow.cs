@@ -78,21 +78,6 @@ public class PlaySpaceEditorWindow : EditorWindow
     {
         if (movementBehavior != null)
         {
-            if (movementBehavior.rescaled)
-            {
-                // get the player's positions and convert to virtual screen proportions
-                leftPlayerspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.leftX, movementBehavior.playspace.leftY));
-                rightPlayspace = ScaleGameToScreen(new Vector2(movementBehavior.playspace.rightX, movementBehavior.playspace.rightY));
-
-                // ... and center them on the position of playSpace extremities
-                botLeft.center = new Vector2(leftPlayerspace.x, leftPlayerspace.y);
-                topRight.center = new Vector2(rightPlayspace.x, rightPlayspace.y);
-                topLeft.center = new Vector2(leftPlayerspace.x, rightPlayspace.y);
-                botRight.center = new Vector2(rightPlayspace.x, leftPlayerspace.y);
-
-                movementBehavior.rescaled = false;
-            }
-
             #region Create Virtual Screen from Player Window
             // create the virtual screen and position it
             screenSize = new Rect(0, 0, Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);
@@ -117,6 +102,13 @@ public class PlaySpaceEditorWindow : EditorWindow
             // draw the virtual screen and the player
             EditorGUI.DrawRect(screenSize, Color.black);
             EditorGUI.DrawRect(playerRect, Color.green);
+
+            if (movementBehavior.rescaled)
+            {
+                xSliderScale = leftPlayerspace.x - screenSize.x / 2;
+                ySliderScale = rightPlayspace.y - screenSize.y / 2;
+            }
+
             #endregion
 
             #region Calculate Virtual Screen Playspace
@@ -201,12 +193,12 @@ public class PlaySpaceEditorWindow : EditorWindow
             // create two label fields
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Playspace Width");
-            xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, screenSize.x);
+            xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, screenSize.width);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Playspace Height");
-            ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, screenSize.y);
+            ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, screenSize.height);
             EditorGUILayout.EndHorizontal();
 
             botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));

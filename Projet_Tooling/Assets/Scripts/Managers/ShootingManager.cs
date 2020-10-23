@@ -5,23 +5,18 @@ namespace Gameplay.Player
 {
     public class ShootingManager : MonoBehaviour
     {
-        ProjectilePool projectilePool = null;
-        [SerializeField] GameObject projectilePrefab;
-        [SerializeField] int projectilePoolSize;
+        [HideInInspector] public ProjectilePool projectilePool = null;
+        [HideInInspector] public GameObject projectilePrefab;
+        [HideInInspector] public int projectilePoolSize;
         private int fireCount;
 
-        [SerializeField] Transform playerTransform;
-        [SerializeField] Transform projectileContainer;
-        [SerializeField] RectTransform playerReticule;
-
-        private void Awake()
-        {
-            projectilePool = new ProjectilePool(projectilePrefab, projectilePoolSize, projectileContainer, playerTransform);
-        }
+        [HideInInspector] public Transform playerTransform;
+        [HideInInspector] public Transform projectileContainer;
+        [HideInInspector] public RectTransform playerReticule;
 
         public void GE_PlayerShooting()
         {
             StartCoroutine(projectilePool.projectileList[fireCount++].Shoot(playerReticule));
-        }        
+        }
     }
 }
