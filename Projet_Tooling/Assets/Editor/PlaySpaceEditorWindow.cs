@@ -18,8 +18,6 @@ public class PlaySpaceEditorWindow : EditorWindow
     float xSliderScale = 100f, ySliderScale = 100f;
 
     TransitionCurveViewerWindow transitionWindow;
-    Vector2 scaleVectorForVisualization;
-
     TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
     
     float time;
@@ -41,8 +39,6 @@ public class PlaySpaceEditorWindow : EditorWindow
         PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
         window.movementBehavior = _movementBehavior;
         window.Show();
-
-        EditorApplication.modifierKeysChanged += window.Repaint;
     }
 
     public static void InitForVisualization(TransitionCurveViewerWindow transitionWindow, TweenManager.TweenFunction myTweenFunction)
@@ -57,8 +53,13 @@ public class PlaySpaceEditorWindow : EditorWindow
         window.startValueRightY = window.topRight.position;
 
         window.Show();
+    }
 
-        EditorApplication.modifierKeysChanged += window.Repaint;
+    public static void StopVisualizing()
+    {
+        PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
+        window.transitionWindow = null;
+        window.Show();
     }
 
     private void OnEnable()
@@ -115,48 +116,12 @@ public class PlaySpaceEditorWindow : EditorWindow
             botRight.center = new Vector2(rightPlayspace.x, leftPlayerspace.y);
             #endregion
 
-            #region Make the Window move if you are visualizing transitions
-
+            #region Make the Playspace transition if you are visualizing
             // if the transition window is open (and you've pressed on one of the visualizations)
             if (transitionWindow != null)
             {
                 // increase the time Passed
                 time += Time.deltaTime;
-
-                /*if (time <= tweenDuration)
-                {
-                    // set the coordinates for the bottom left point
-                    //changeBotLeftX = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftX;
-                    changeBotLeftX = screenSpace.center - startValueLeftX;
-                    float botLeftX = tweenFunction(time, startValueLeftX.x, changeBotLeftX.x, tweenDuration);
-                    float botLeftY = tweenFunction(time, startValueLeftX.y, changeBotLeftX.y, tweenDuration);
-
-                    botLeft.center = new Vector2(botLeftX, botLeftY);
-
-                    // set the coordinates for the top left point
-                    //changeTopLeftY = new Vector2(windowSize.leftX, windowSize.rightY) - startValueLeftY;
-                    changeTopLeftY = screenSpace.center - startValueLeftY;
-                    float topLeftX = tweenFunction(time, startValueLeftY.x, changeTopLeftY.x, tweenDuration);
-                    float topLeftY = tweenFunction(time, startValueLeftY.y, changeTopLeftY.y, tweenDuration);
-
-                    topLeft.center = new Vector2(topLeftX, topLeftY);
-
-                    // set the coordinates for the bottom right point
-                    //changeBotRightX = new Vector2(windowSize.rightX, windowSize.leftY) - startValueRightX;
-                    changeBotRightX = screenSpace.center - startValueRightX;
-                    float botRightX = tweenFunction(time, startValueRightX.x, changeBotRightX.x, tweenDuration);
-                    float botRightY = tweenFunction(time, startValueRightX.y, changeBotRightX.y, tweenDuration);
-
-                    botRight.center = new Vector2(botRightX, botRightY);
-
-                    // set the coordinates for the top right point
-                    //changeTopRightY = new Vector2(windowSize.rightX, windowSize.rightY) - startValueRightY;
-                    changeTopRightY = screenSpace.center - startValueRightY;
-                    float topRightX = tweenFunction(time, startValueRightY.x, changeTopRightY.x, tweenDuration);
-                    float topRightY = tweenFunction(time, startValueRightY.y, changeTopRightY.y, tweenDuration);
-
-                    topRight.center = new Vector2(topRightX, topRightY);
-                }*/
 
                 if (time <= tweenDuration)
                 {
@@ -212,19 +177,24 @@ public class PlaySpaceEditorWindow : EditorWindow
             #endregion
 
             #region Change Rect Size with a slider
-            // create two label fields
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Playspace Width");
-            xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, Camera.main.pixelWidth / 2);
-            EditorGUILayout.EndHorizontal();
+            // if you aren't currently visualizing translations
+            if (transitionWindow == null)
+            {
+                // create two label fields
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Playspace Width");
+                xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, Camera.main.pixelWidth / 2);
+                EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Playspace Height");
-            ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, Camera.main.pixelHeight / 2);
-            EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Playspace Height");
+                ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, Camera.main.pixelHeight / 2);
+                EditorGUILayout.EndHorizontal();
 
-            botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));
-            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xSliderScale, Camera.main.pixelHeight - ySliderScale));
+                botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));
+                topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xSliderScale, Camera.main.pixelHeight - ySliderScale));
+            }
+
             //UNDO SLIDER
             /*EditorGUI.BeginChangeCheck();
             var myFloatForUndoCheck = scale;

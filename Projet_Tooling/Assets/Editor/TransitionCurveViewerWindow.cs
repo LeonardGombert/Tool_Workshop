@@ -13,14 +13,16 @@ public class TransitionCurveViewerWindow : EditorWindow
     List<Rect> myRects = new List<Rect>();
     List<Vector2> myRectPositions = new List<Vector2>();
 
-    Rect linearRect = new Rect(0, 0, 10, 10);
-    Rect easeInRect = new Rect(250, 0, 10, 10);
-    Rect easeInQuad = new Rect(500, 0, 10, 10);
-    Rect EaseInOutQuad = new Rect(750, 0, 10, 10);
-    Rect easeInOutQuint = new Rect(1000, 0, 10, 10);
-    Rect easeInOutSine = new Rect(1250, 0, 10, 10);
+    Rect linearRect = new Rect(0, 25, 10, 10);
+    Rect easeInRect = new Rect(250, 25, 10, 10);
+    Rect easeInQuad = new Rect(500, 25, 10, 10);
+    Rect EaseInOutQuad = new Rect(750, 25, 10, 10);
+    Rect easeInOutQuint = new Rect(1000, 25, 10, 10);
+    Rect easeInOutSine = new Rect(1250, 25, 10, 10);
 
     public Vector2 vectorScaling;
+
+    bool visualizing;
 
     [MenuItem("Window/Curve Animation Window")]
     public static void Init()
@@ -51,9 +53,16 @@ public class TransitionCurveViewerWindow : EditorWindow
             GUI.backgroundColor = Color.black;
             if (GUI.Button(new Rect(myRects[i].position.x, myRects[i].position.y, 205, 205), ""))
             {
-                // send the info to the playspace window
-                PlaySpaceEditorWindow.InitForVisualization(this, TweenManager.tweenFunctions[i]);
-                Debug.Log("Clicked on a button");
+                // if you're already visualizing something, throw the user an error message
+                if (visualizing == true) EditorUtility.DisplayDialog
+                        ("Warning", "Try stopping the current visualization before trying out a new one. You can also take the time to change some parameters around first :)", "Ok");
+
+                else
+                {
+                    visualizing = true;
+                    // send the info to the playspace window
+                    PlaySpaceEditorWindow.InitForVisualization(this, TweenManager.tweenFunctions[i]);
+                }
             }
             GUI.backgroundColor = oldColor;
 
@@ -65,9 +74,21 @@ public class TransitionCurveViewerWindow : EditorWindow
             EditorGUI.DrawRect(currentRect, Color.green);
             myRectPositions.Add(currentRect.center);
         }
+
+        var oldColor2 = GUI.backgroundColor;
+        GUI.backgroundColor = Color.red;
+        if (GUILayout.Button(new GUIContent("Reset Visualization Counter")))
+        {
+            time = 0;
+            PlaySpaceEditorWindow.StopVisualizing();
+            visualizing = false;
+        }
+        GUI.backgroundColor = oldColor2;
         #endregion
 
-        foreach (Vector2 position in myRectPositions) EditorGUI.DrawRect(new Rect(position, new Vector2(2, 2)), Color.green);
+        // render a line that follows the curve
+        foreach (Vector2 position in myRectPositions)
+            EditorGUI.DrawRect(new Rect(position, new Vector2(2, 2)), Color.green);
 
         Repaint();
     }
