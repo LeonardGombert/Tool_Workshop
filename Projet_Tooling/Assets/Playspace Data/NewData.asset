@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NewData
   m_EditorClassIdentifier: 
   playspaceBounds:
-    leftX: 100
-    leftY: 100
-    rightX: 498
-    rightY: 274
+    leftX: 0
+    leftY: 95.70001
+    rightX: 598
+    rightY: 278.3

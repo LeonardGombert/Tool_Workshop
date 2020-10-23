@@ -116,37 +116,80 @@ public class PlaySpaceEditorWindow : EditorWindow
             #endregion
 
             #region Make the Window move if you are visualizing transitions
+
+            // if the transition window is open (and you've pressed on one of the visualizations)
             if (transitionWindow != null)
             {
+                // increase the time Passed
                 time += Time.deltaTime;
 
-                if (time <= tweenDuration)
+                /*if (time <= tweenDuration)
                 {
-                    changeBotLeftX = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftX;
+                    // set the coordinates for the bottom left point
+                    //changeBotLeftX = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftX;
+                    changeBotLeftX = screenSpace.center - startValueLeftX;
                     float botLeftX = tweenFunction(time, startValueLeftX.x, changeBotLeftX.x, tweenDuration);
                     float botLeftY = tweenFunction(time, startValueLeftX.y, changeBotLeftX.y, tweenDuration);
 
                     botLeft.center = new Vector2(botLeftX, botLeftY);
 
-                    changeTopLeftY = new Vector2(windowSize.leftX, windowSize.rightY) - startValueLeftY;
+                    // set the coordinates for the top left point
+                    //changeTopLeftY = new Vector2(windowSize.leftX, windowSize.rightY) - startValueLeftY;
+                    changeTopLeftY = screenSpace.center - startValueLeftY;
                     float topLeftX = tweenFunction(time, startValueLeftY.x, changeTopLeftY.x, tweenDuration);
                     float topLeftY = tweenFunction(time, startValueLeftY.y, changeTopLeftY.y, tweenDuration);
 
                     topLeft.center = new Vector2(topLeftX, topLeftY);
 
-                    changeBotRightX = new Vector2(windowSize.rightX, windowSize.leftY) - startValueRightX;
+                    // set the coordinates for the bottom right point
+                    //changeBotRightX = new Vector2(windowSize.rightX, windowSize.leftY) - startValueRightX;
+                    changeBotRightX = screenSpace.center - startValueRightX;
                     float botRightX = tweenFunction(time, startValueRightX.x, changeBotRightX.x, tweenDuration);
                     float botRightY = tweenFunction(time, startValueRightX.y, changeBotRightX.y, tweenDuration);
 
                     botRight.center = new Vector2(botRightX, botRightY);
 
-                    changeTopRightY = new Vector2(windowSize.rightX, windowSize.rightY) - startValueRightY;
+                    // set the coordinates for the top right point
+                    //changeTopRightY = new Vector2(windowSize.rightX, windowSize.rightY) - startValueRightY;
+                    changeTopRightY = screenSpace.center - startValueRightY;
                     float topRightX = tweenFunction(time, startValueRightY.x, changeTopRightY.x, tweenDuration);
                     float topRightY = tweenFunction(time, startValueRightY.y, changeTopRightY.y, tweenDuration);
 
                     topRight.center = new Vector2(topRightX, topRightY);
+                }*/
+
+                if (time <= tweenDuration)
+                {
+                    // set the coordinates for the bottom left point
+                    changeBotLeftX = startValueLeftX - new Vector2(windowSize.leftX, windowSize.leftY);
+                    float botLeftX = tweenFunction(time, windowSize.leftX, changeBotLeftX.x, tweenDuration);
+                    float botLeftY = tweenFunction(time, windowSize.leftY, changeBotLeftX.y, tweenDuration);
+
+                    botLeft.center = new Vector2(botLeftX, botLeftY);
+
+                    // set the coordinates for the top left point
+                    changeTopLeftY = startValueLeftY - new Vector2(windowSize.leftX, windowSize.rightY);
+                    float topLeftX = tweenFunction(time, windowSize.leftX, changeTopLeftY.x, tweenDuration);
+                    float topLeftY = tweenFunction(time, windowSize.rightY, changeTopLeftY.y, tweenDuration);
+
+                    topLeft.center = new Vector2(topLeftX, topLeftY);
+
+                    // set the coordinates for the bottom right point
+                    changeBotRightX = startValueRightX - new Vector2(windowSize.rightX, windowSize.leftY);
+                    float botRightX = tweenFunction(time, windowSize.rightX, changeBotRightX.x, tweenDuration);
+                    float botRightY = tweenFunction(time, windowSize.leftY, changeBotRightX.y, tweenDuration);
+
+                    botRight.center = new Vector2(botRightX, botRightY);
+
+                    // set the coordinates for the top right point
+                    changeTopRightY = startValueRightY - new Vector2(windowSize.rightX, windowSize.rightY);
+                    float topRightX = tweenFunction(time, windowSize.rightX, changeTopRightY.x, tweenDuration);
+                    float topRightY = tweenFunction(time, windowSize.rightY, changeTopRightY.y, tweenDuration);
+
+                    topRight.center = new Vector2(topRightX, topRightY);
                 }
 
+                // once you've reached the outer limit of the sreen, reset the time
                 else time = 0;
             }
             #endregion
