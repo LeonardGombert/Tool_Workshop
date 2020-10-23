@@ -15,7 +15,19 @@ public class PlaySpaceEditorWindow : EditorWindow
     Vector2 leftPlayerspace, rightPlayspace;
     Vector3 scaledPosition;
 
-    float xScale = 100f, yScale = 100f;
+    float xSliderScale = 100f, ySliderScale = 100f;
+
+    TransitionCurveViewerWindow transitionWindow;
+    Vector2 scaleVectorForVisualization;
+
+    TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
+    
+    float time;
+    
+    Vector2 changeBotLeftX, changeTopLeftY, changeBotRightX, changeTopRightY;
+    Vector2 startValueLeftX, startValueLeftY, startValueRightX, startValueRightY;
+
+    float tweenDuration = 200f;
 
     [MenuItem("Window/Playspace Editor Window %w")]
     public static void Init()
@@ -24,7 +36,6 @@ public class PlaySpaceEditorWindow : EditorWindow
         window.Show();
     }
 
-    [MenuItem("Window/Playspace Editor Window %w")]
     public static void InitWithContent(MovementBehavior _movementBehavior)
     {
         PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
@@ -34,10 +45,26 @@ public class PlaySpaceEditorWindow : EditorWindow
         EditorApplication.modifierKeysChanged += window.Repaint;
     }
 
+    public static void InitForVisualization(TransitionCurveViewerWindow transitionWindow, TweenManager.TweenFunction myTweenFunction)
+    {
+        PlaySpaceEditorWindow window = GetWindow<PlaySpaceEditorWindow>();
+        window.transitionWindow = transitionWindow;
+        window.tweenFunction = myTweenFunction;
+        
+        window.startValueLeftX = window.botLeft.position;
+        window.startValueLeftY = window.topLeft.position;
+        window.startValueRightX = window.botRight.position;
+        window.startValueRightY = window.topRight.position;
+
+        window.Show();
+
+        EditorApplication.modifierKeysChanged += window.Repaint;
+    }
+
     private void OnEnable()
     {
         if (movementBehavior == null) movementBehavior = GameObject.Find("Player").GetComponent<MovementBehavior>();
-        topLeft = new Rect(leftPlayerspace.x, rightPlayspace.y, 10, 10);
+        topLeft = new Rect(leftPlayerspace.x, rightPlayspace.y, 10, 10); // forgot what this was for
     }
 
     private void OnGUI()
@@ -88,6 +115,26 @@ public class PlaySpaceEditorWindow : EditorWindow
             botRight.center = new Vector2(rightPlayspace.x, leftPlayerspace.y);
             #endregion
 
+            #region Make the Window move if you are visualizing transitions
+            if (transitionWindow != null)
+            {
+                time += Time.deltaTime;
+
+                if (time <= tweenDuration)
+                {
+                    changeBotLeftX = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftX;
+                    botLeft.x = tweenFunction(time, startValueLeftX.x, changeBotLeftX.x, tweenDuration);
+                    botLeft.y = tweenFunction(time, startValueLeftX.y, changeBotLeftX.y, tweenDuration);
+
+                    changeTopLeftY = new Vector2(windowSize.leftX, windowSize.leftY) - startValueLeftY;
+                    topLeft.x = tweenFunction(time, startValueLeftY.x, changeTopLeftY.x, tweenDuration);
+                    topLeft.y = tweenFunction(time, startValueLeftY.y, changeTopLeftY.y, tweenDuration);
+                }
+
+                else time = 0;
+            }
+            #endregion
+
             #region Draw Playspace on Virtual Screen
             // draw extremities of the playSpace
             EditorGUI.DrawRect(topLeft, Color.white);
@@ -109,16 +156,16 @@ public class PlaySpaceEditorWindow : EditorWindow
             // create two label fields
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Playspace Width");
-            xScale = EditorGUILayout.Slider(xScale, 0, Camera.main.pixelWidth / 2);
+            xSliderScale = EditorGUILayout.Slider(xSliderScale, 0, Camera.main.pixelWidth / 2);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Playspace Height");
-            yScale = EditorGUILayout.Slider(yScale, 0, Camera.main.pixelHeight / 2);
+            ySliderScale = EditorGUILayout.Slider(ySliderScale, 0, Camera.main.pixelHeight / 2);
             EditorGUILayout.EndHorizontal();
 
-            botLeft.center = ScaleGameToScreen(new Vector2(xScale, yScale));
-            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xScale, Camera.main.pixelHeight - yScale));
+            botLeft.center = ScaleGameToScreen(new Vector2(xSliderScale, ySliderScale));
+            topRight.center = ScaleGameToScreen(new Vector2(Camera.main.pixelWidth - xSliderScale, Camera.main.pixelHeight - ySliderScale));
             //UNDO SLIDER
             /*EditorGUI.BeginChangeCheck();
             var myFloatForUndoCheck = scale;
@@ -145,19 +192,22 @@ public class PlaySpaceEditorWindow : EditorWindow
             movementBehavior.playspace.rightX = appliedBounds.rightX;
             movementBehavior.playspace.rightY = appliedBounds.rightY;
             #endregion
-        }
 
-        #region Export the Playspace as a new Preset
-        if (GUILayout.Button(new GUIContent("Save this preset", "Export these Playspace settings into a ScriptableObject format")))
-        {
-            PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
-            newSaveData.playspaceBounds = appliedBounds;
-            AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
-            EditorUtility.SetDirty(newSaveData);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            #region Export the Playspace as a new Preset
+            if (GUILayout.Button(new GUIContent("Save this preset", "Export these Playspace settings into a ScriptableObject format")))
+            {
+                PlayspaceScriptableObject newSaveData = CreateInstance<PlayspaceScriptableObject>();
+                newSaveData.playspaceBounds = appliedBounds;
+                AssetDatabase.CreateAsset(newSaveData, "Assets/Playspace Data/NewData.asset");
+                EditorUtility.SetDirty(newSaveData);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+
+            if (GUILayout.Button(new GUIContent("Open Transition Visualizer", "Open a window to visualise ohw the different transitions behave"))) 
+                TransitionCurveViewerWindow.Init();
+            #endregion
         }
-        #endregion
 
         Repaint();
     }

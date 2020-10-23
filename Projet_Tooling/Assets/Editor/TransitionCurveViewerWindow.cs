@@ -20,7 +20,7 @@ public class TransitionCurveViewerWindow : EditorWindow
     Rect easeInOutQuint = new Rect(1000, 0, 10, 10);
     Rect easeInOutSine = new Rect(1250, 0, 10, 10);
 
-    TweenManager.TweenFunction tweenFunction = default; // use for enum ? 
+    public Vector2 vectorScaling;
 
     [MenuItem("Window/Curve Animation Window")]
     public static void Init()
@@ -46,13 +46,22 @@ public class TransitionCurveViewerWindow : EditorWindow
         #region Draw the Rects moving over time
         for (int i = 0; i < myRects.Count; i++)
         {
-            EditorGUI.DrawRect(new Rect(myRects[i].position.x, myRects[i].position.y, 205, 205), Color.black);
-            Rect currentRect = new Rect(Vector2.zero, new Vector2(10, 10));
+            // set the button color to black to match the asthetic
+            var oldColor = GUI.backgroundColor;
+            GUI.backgroundColor = Color.black;
+            if (GUI.Button(new Rect(myRects[i].position.x, myRects[i].position.y, 205, 205), ""))
+            {
+                // send the info to the playspace window
+                PlaySpaceEditorWindow.InitForVisualization(this, TweenManager.tweenFunctions[i]);
+                Debug.Log("Clicked on a button");
+            }
+            GUI.backgroundColor = oldColor;
 
             startValue = myRects[i].position;
             targetValue = myRects[i].position + new Vector2(200, 200);
 
-            currentRect.center = MoveValue(myRects[i].position, TweenManager.tweenFunctions[i]);
+            Rect currentRect = new Rect(Vector2.zero, new Vector2(10, 10));
+            currentRect.center = MoveValue(TweenManager.tweenFunctions[i]);
             EditorGUI.DrawRect(currentRect, Color.green);
             myRectPositions.Add(currentRect.center);
         }
@@ -65,7 +74,7 @@ public class TransitionCurveViewerWindow : EditorWindow
 
     #region Tween Move Function
     // Move the rect along the curve
-    Vector2 MoveValue(Vector2 exampleValue, TweenManager.TweenFunction type)
+    Vector2 MoveValue(TweenManager.TweenFunction type)
     {
         Vector2 returnVector = new Vector2();
 
@@ -82,6 +91,11 @@ public class TransitionCurveViewerWindow : EditorWindow
             time = 0f;
             return targetValue;
         }
+    }
+
+    private void OnDisable()
+    {
+        // stop sending info to the playspace manager
     }
     #endregion
 }
