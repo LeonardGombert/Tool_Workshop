@@ -21,31 +21,19 @@ public class MovementBehaviorEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
-        /*
         serializedObject.Update();
         EditorGUILayout.BeginVertical();
 
         EditorGUILayout.PropertyField(playerSpeed);
-        EditorGUILayout.PropertyField(vectorBounds);
 
         foldoutState = EditorGUILayout.Foldout(foldoutState, "Vector4 Bounds", true);
 
-        if(foldoutState)
-        {
-            EditorGUILayout.BeginHorizontal();
-            //GUILayout.Label("Vector4 Bounds");
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("rightX"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("rightY"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("leftX"), GUIContent.none);
-            EditorGUILayout.PropertyField(vectorBounds.FindPropertyRelative("leftY"), GUIContent.none);
-            EditorGUILayout.EndHorizontal();
-        }
+        if(foldoutState)EditorGUILayout.PropertyField(vectorBounds);
 
         if (GUILayout.Button("Open Playspace Editor")) PlaySpaceEditorWindow.InitWithContent(target as MovementBehavior);
 
         EditorGUILayout.EndVertical();
-        serializedObject.ApplyModifiedProperties();*/
+        serializedObject.ApplyModifiedProperties();
 
     }
 }
