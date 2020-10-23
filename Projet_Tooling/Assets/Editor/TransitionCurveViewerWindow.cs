@@ -8,7 +8,7 @@ public class TransitionCurveViewerWindow : EditorWindow
     Vector2 change;
     Vector2 startValue = new Vector2(0, 0);
     Vector2 targetValue = new Vector2(150, 150);
-    float tweenDuration = 200f;
+    float tweenDuration = 50f;
 
     List<Rect> myRects = new List<Rect>();
 
@@ -18,8 +18,6 @@ public class TransitionCurveViewerWindow : EditorWindow
     Rect EaseInOutQuad = new Rect(600, 0, 10, 10);
     Rect easeInOutQuint = new Rect(800, 0, 10, 10);
     Rect easeInOutSine = new Rect(1000, 0, 10, 10);
-
-    //static TweenManager.TweenFunction tweenfunction = TweenManager.GetTween();;
 
     TweenManager.TweenFunction tweenFunction = default;
 
@@ -66,7 +64,7 @@ public class TransitionCurveViewerWindow : EditorWindow
         {
             change = targetValue - startValue;
             returnVector.x = type(time, startValue.x, change.x, tweenDuration);
-            returnVector.y = type(time, startValue.y, change.y, tweenDuration);
+            returnVector.y = TweenManager.LinearTween(time, startValue.y, change.y, tweenDuration); // leave this as a linear tween to get a nicer visualization
             return returnVector;
         }
 
